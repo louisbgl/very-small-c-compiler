@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include "src/lexer/lexer.hpp"
+#include "src/parser/parser.hpp"
 
 std::string readFile(const std::string& filepath) {
     std::ifstream file(filepath);
@@ -33,8 +34,15 @@ int main(int argc, char* argv[]) {
     lexer::Lexer lexer(sourceCode);
     
     // Print all tokens
-    std::cout << "Tokens for " << argv[1] << ":\n";
+    std::cout << "=> FILE: " << argv[1] << std::endl;
+    std::cout << "====== Start of Tokens ======" << std::endl;
     lexer.printTokens();
-    
+    std::cout << "====== End of Tokens ========\n" << std::endl;
+
+    // Create parser and parse the tokens
+    parser::Parser parser(lexer);
+    std::cout << "====== Parsing Program ======" << std::endl;
+    parser.printProgram();
+    std::cout << "====== End of Parsing =======\n" << std::endl;
     return 0;
 }
