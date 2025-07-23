@@ -34,7 +34,9 @@ const Token &Lexer::nextToken() {
     }
     
     if (tokenIndex < tokens.size()) {
-        return tokens[tokenIndex++];
+        auto& token = tokens[tokenIndex];
+        tokenIndex++;
+        return token;
     }
     return tokens.back(); // Return EndOfFile token
 }
