@@ -42,6 +42,10 @@ int main(int argc, char* argv[]) {
     std::cout << "====== Parsing Program ======" << std::endl;
     compiler.printAST();
     std::cout << "====== End of Parsing =======\n" << std::endl;
+
+    std::cout << "====== Emitting Assembly =====" << std::endl;
+    compiler.emitAssembly();
+    std::cout << "====== End of Assembly ======\n" << std::endl;
     
     return 0;
 }
