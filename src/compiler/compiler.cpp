@@ -9,8 +9,7 @@ Compiler::Compiler(std::string_view source)
 }
 
 void Compiler::emitAssembly() {
-    // Placeholder for assembly emission logic
-    std::cout << "NOT IMPLEMENTED" << std::endl;
+    printAssembly();
 }
 
 void Compiler::printTokens() const {
@@ -25,12 +24,21 @@ void Compiler::printAST() const {
     }
 }
 
+void Compiler::printAssembly() const {
+    if (codegen) {
+        std::cout << codegen->emitAssembly();
+    }
+}
+
 void Compiler::compile() {
     // Step 1: Tokenize the source code
     lexer = std::make_unique<lexer::Lexer>(source);
     
     // Step 2: Parse the tokens into an AST
     parser = std::make_unique<parser::Parser>(*lexer);
+
+    // Step 3: Generate code from the AST
+    codegen = std::make_unique<codegen::CodeGenerator>(parser->getProgram());
 }
 
 } // namespace compiler

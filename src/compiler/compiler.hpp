@@ -4,6 +4,7 @@
 #include <memory>
 #include "../lexer/lexer.hpp"
 #include "../parser/parser.hpp"
+#include "../codegen/codegen.hpp"
 
 namespace compiler {
 
@@ -18,11 +19,13 @@ public:
 
     void printTokens() const;
     void printAST() const;
+    void printAssembly() const;
     
 private:
     std::string_view source;
     std::unique_ptr<lexer::Lexer> lexer;
     std::unique_ptr<parser::Parser> parser;
+    std::unique_ptr<codegen::CodeGenerator> codegen;
 
     /* Compile the source code, called from the constructor */
     void compile();
