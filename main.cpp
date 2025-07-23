@@ -2,8 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "src/lexer/lexer.hpp"
-#include "src/parser/parser.hpp"
+#include "src/compiler/compiler.hpp"
 
 std::string readFile(const std::string& filepath) {
     std::ifstream file(filepath);
@@ -30,19 +29,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Create lexer and tokenize
-    lexer::Lexer lexer(sourceCode);
-    
-    // Print all tokens
     std::cout << "=> FILE: " << argv[1] << std::endl;
+    
+    // Compile the source code
+    compiler::Compiler compiler(sourceCode);
+    
+    // Print compilation results
     std::cout << "====== Start of Tokens ======" << std::endl;
-    lexer.printTokens();
+    compiler.printTokens();
     std::cout << "====== End of Tokens ========\n" << std::endl;
 
-    // Create parser and parse the tokens
-    parser::Parser parser(lexer);
     std::cout << "====== Parsing Program ======" << std::endl;
-    parser.printProgram();
+    compiler.printAST();
     std::cout << "====== End of Parsing =======\n" << std::endl;
+    
     return 0;
 }
