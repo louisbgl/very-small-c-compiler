@@ -16,12 +16,14 @@ BINDIR := bin
 # Output binary
 TARGET := $(BINDIR)/vscc
 
-# Source files
-SRCS := main.cpp \
-        $(wildcard $(SRCDIR)/lexer/*.cpp)
+# Source files - automatically discover all .cpp files
+SRCS := main.cpp $(shell find $(SRCDIR) -name "*.cpp" -type f)
 
 # Object files
 OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SRCS))
+
+# Automatically create list of all subdirectories that need to be created
+BUILD_DIRS := $(sort $(dir $(OBJS)))
 
 # Include directories
 INCLUDES := -I$(SRCDIR)
@@ -33,10 +35,9 @@ all: setup $(TARGET)
 debug: CXXFLAGS += $(DEBUGFLAGS)
 debug: all
 
-# Setup build directories
+# Setup build directories - automatically create all needed directories
 setup:
-	@mkdir -p $(BUILDDIR)/$(SRCDIR)/lexer
-	@mkdir -p $(BINDIR)
+	@mkdir -p $(BUILD_DIRS) $(BINDIR)
 
 # Link the final executable
 $(TARGET): $(OBJS)
@@ -44,13 +45,14 @@ $(TARGET): $(OBJS)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Compile main.cpp
-$(BUILDDIR)/main.o: main.cpp $(wildcard $(SRCDIR)/lexer/*.hpp)
+$(BUILDDIR)/main.o: main.cpp $(shell find $(SRCDIR) -name "*.hpp" -type f)
 	@echo "Compiling $<"
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Compile lexer source files
-$(BUILDDIR)/$(SRCDIR)/lexer/%.o: $(SRCDIR)/lexer/%.cpp $(SRCDIR)/lexer/%.hpp $(SRCDIR)/lexer/token.hpp $(SRCDIR)/lexer/tokenType.hpp
+# Generic rule for compiling any .cpp file in src/
+$(BUILDDIR)/$(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo "Compiling $<"
+	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean build artifacts
