@@ -13,6 +13,10 @@ public:
     static void printCompoundStatement(const NodeCompoundStatement& compound);
     static void printStatement(const NodeStatement& statement);
     static void printExpression(const NodeExpression& expression);
+    
+    // Helper functions for specific node types
+    static void printExpressionPrimary(const NodeExpressionPrimary& primary);
+    static void printExpressionBinary(const NodeExpressionBinary& binary);
 
     // Instance interface (if needed for future extensibility)
     ProgramPrinter() = default;

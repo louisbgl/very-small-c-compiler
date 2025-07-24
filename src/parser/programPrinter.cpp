@@ -50,32 +50,48 @@ void ProgramPrinter::printExpression(const NodeExpression& expression) {
     std::visit([](const auto& expr) {
         using T = std::decay_t<decltype(expr)>;
         if constexpr (std::is_same_v<T, NodeExpressionPrimary>) {
-            std::cout << "Integer Literal: " << expr.intValue << std::endl;
+            ProgramPrinter::printExpressionPrimary(expr);
         }
         else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
-            std::cout << "Binary Expression: ";
-            switch (expr.op) {
-                case NodeExpressionBinary::BinaryOperator::Add:
-                    std::cout << "Add" << std::endl;
-                    break;
-                case NodeExpressionBinary::BinaryOperator::Subtract:
-                    std::cout << "Subtract" << std::endl;
-                    break;
-            }
-            std::cout << "  Left: ";
-            if (expr.left) {
-                printExpression(*expr.left);
-            } else {
-                std::cout << "null" << std::endl;
-            }
-            std::cout << "  Right: ";
-            if (expr.right) {
-                printExpression(*expr.right);
-            } else {
-                std::cout << "null" << std::endl;
-            }
+            ProgramPrinter::printExpressionBinary(expr);
         }
     }, expression.value);
+}
+
+void ProgramPrinter::printExpressionPrimary(const NodeExpressionPrimary& primary) {
+    std::visit([](const auto& value) {
+        using ValueType = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<ValueType, int>) {
+            std::cout << "Integer Literal: " << value << std::endl;
+        } else if constexpr (std::is_same_v<ValueType, std::unique_ptr<NodeExpression>>) {
+            std::cout << "Grouped Expression: " << std::endl;
+            ProgramPrinter::printExpression(*value);
+        }
+    }, primary.value);
+}
+
+void ProgramPrinter::printExpressionBinary(const NodeExpressionBinary& binary) {
+    std::cout << "Binary Expression: ";
+    switch (binary.op) {
+        case NodeExpressionBinary::BinaryOperator::Add:
+            std::cout << "Add" << std::endl;
+            break;
+        case NodeExpressionBinary::BinaryOperator::Subtract:
+            std::cout << "Subtract" << std::endl;
+            break;
+    }
+    std::cout << "  Left: ";
+    if (binary.left) {
+        ProgramPrinter::printExpression(*binary.left);
+    } else {
+        std::cout << "null" << std::endl;
+    }
+    std::cout << "  Right: ";
+    if (binary.right) {
+        ProgramPrinter::printExpression(*binary.right);
+    } else {
+        std::cout << "null" << std::endl;
+    }
 }
 
 // Instance methods implementation (delegate to static methods)
