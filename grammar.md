@@ -12,6 +12,6 @@ ReturnStmt         = "return" Expression ";"
 
 Expression         = PrimaryExpression | AdditiveExpression
 
-PrimaryExpression  = NumberLiteral | Identifier
+PrimaryExpression  = NumberLiteral
 
 AdditiveExpression = PrimaryExpression ("+" | "-") PrimaryExpression
