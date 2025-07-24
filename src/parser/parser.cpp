@@ -88,14 +88,20 @@ NodeExpression Parser::parseAddSubExpression() {
 }
 
 NodeExpression Parser::parsePrimaryExpression() {
-    if (currentToken.type != TokenType::Number) {
-        throw std::runtime_error("[Parser::parsePrimaryExpression] Expected an integer literal");
+    if (currentToken.type == TokenType::Number) {
+        int value = std::stoi(std::string(currentToken.lexeme));
+        expectAndConsumeToken(TokenType::Number);
+        return NodeBuilder::createPrimaryExpression(value);
     }
-
-    int value = std::stoi(std::string(currentToken.lexeme));
-    expectAndConsumeToken(TokenType::Number);
-    
-    return NodeBuilder::createPrimaryExpression(value);
+    else if (currentToken.type == TokenType::OpenParen) {
+        expectAndConsumeToken(TokenType::OpenParen);
+        auto expression = parseExpression();
+        expectAndConsumeToken(TokenType::CloseParen);
+        return NodeBuilder::createPrimaryExpression(std::move(expression));
+    }
+    else {
+        throw std::runtime_error("[Parser::parsePrimaryExpression] Expected an integer literal or an expression in parentheses");
+    }
 }
 
 void Parser::expectAndConsumeToken(TokenType expected) {
