@@ -22,6 +22,7 @@ enum class TokenType {
     OpenBrace, CloseBrace,
 
     // Operators
+    Equal,
     Plus,
     Minus,
     Star,
@@ -30,7 +31,7 @@ enum class TokenType {
 
 inline const std::string tokenTypeToString(TokenType type) {
     switch (type) {
-        case TokenType::Unknown: return "Unknown";
+        case TokenType::Unknown: return "\033[31mUnknown\033[0m"; // Red for unknown tokens
         case TokenType::EndOfFile: return "EndOfFile";
         case TokenType::Keyword_int: return "Keyword_int";
         case TokenType::Keyword_return: return "Keyword_return";
@@ -42,10 +43,11 @@ inline const std::string tokenTypeToString(TokenType type) {
         case TokenType::CloseParen: return "CloseParen";
         case TokenType::OpenBrace: return "OpenBrace";
         case TokenType::CloseBrace: return "CloseBrace";
+        case TokenType::Equal: return "Equal";
         case TokenType::Plus: return "Plus";
         case TokenType::Minus: return "Minus";
         case TokenType::Star: return "Star";
         case TokenType::Slash: return "Slash";
     }
-    return "Unknown"; // Fallback
+    return "\033[31mUnknown\033[0m"; // Fallback, red for unknown tokens
 }
