@@ -1,13 +1,17 @@
-Program        = FunctionDecl
+Program            = FunctionDecl
 
-FunctionDecl   = Type Identifier "(" ")" CompoundStmt
+FunctionDecl       = Type Identifier "(" ")" CompoundStmt
 
-Type           = "int"
+Type               = "int"
 
-CompoundStmt   = "{" Statement* "}"
+CompoundStmt       = "{" Statement* "}"
 
-Statement      = ReturnStmt
+Statement          = ReturnStmt
 
-ReturnStmt     = "return" Expression ";"
+ReturnStmt         = "return" Expression ";"
 
-Expression     = NumberLiteral
+Expression         = PrimaryExpression | AdditiveExpression
+
+PrimaryExpression  = NumberLiteral | Identifier
+
+AdditiveExpression = PrimaryExpression ("+" | "-") PrimaryExpression
