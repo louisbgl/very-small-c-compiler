@@ -17,22 +17,33 @@ TOTAL=0
 # Function to run a single test
 run_test() {
     local test_file="$1"
-    local expected_exit_code="$2"
-    local test_name="$3"
+    local test_name="$2"
     
     echo -n "Testing $test_name... "
     
-    # Run the compiler and capture its exit code
+    # Compile and run with GCC to get expected result
+    gcc "$test_file" -o gcc_test_output 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo -e "${YELLOW}SKIPPED${NC} (GCC compilation failed)"
+        rm -f gcc_test_output
+        return
+    fi
+    
+    ./gcc_test_output > /dev/null 2>&1
+    expected_exit_code=$?
+    rm -f gcc_test_output
+    
+    # Run our compiler and capture its exit code
     ./bin/vscc "$test_file" > /dev/null 2>&1
     actual_exit_code=$?
     
     TOTAL=$((TOTAL + 1))
     
     if [ $actual_exit_code -eq $expected_exit_code ]; then
-        echo -e "${GREEN}PASSED${NC} (exit code: $actual_exit_code)"
+        echo -e "${GREEN}PASSED${NC} (exit code: $actual_exit_code, matches GCC)"
         PASSED=$((PASSED + 1))
     else
-        echo -e "${RED}FAILED${NC} (expected: $expected_exit_code, got: $actual_exit_code)"
+        echo -e "${RED}FAILED${NC} (VSCC: $actual_exit_code, GCC: $expected_exit_code)"
         FAILED=$((FAILED + 1))
     fi
 }
@@ -48,17 +59,27 @@ if [ ! -f "./bin/vscc" ]; then
     exit 1
 fi
 
+# Check if GCC is available
+if ! command -v gcc &> /dev/null; then
+    echo -e "${RED}Error: GCC not found. Please install GCC for reference testing.${NC}"
+    exit 1
+fi
+
 # Run tests
-echo "Running tests..."
+echo "Running tests (comparing against GCC)..."
 echo
 
-run_test "examples/sample1.c" 0 "Return zero"
-run_test "examples/sample2.c" 1 "Simple addition (0 + 1)"
-run_test "examples/sample3.c" 3 "Complex addition (0 + 1 + 2)"
-run_test "examples/sample4.c" 5 "Subtraction (7 - 2)"
-run_test "examples/sample5.c" 19 "Complex expression (0 + 1 + ... + 10)"
-run_test "examples/sample6.c" 0 "Expression with parentheses (1 + (2 - 3))"
-run_test "examples/sample7.c" 5 "Nested expressions with parentheses ((10 - 10) + 1 + (2 + 3 - (2 + 3 - 4)))"
+run_test "examples/sample1.c" "[sample1]  Return zero"
+run_test "examples/sample2.c" "[sample2]  Simple addition"
+run_test "examples/sample3.c" "[sample3]  Complex addition"
+run_test "examples/sample4.c" "[sample4]  Subtraction"
+run_test "examples/sample5.c" "[sample5]  Complex expression"
+run_test "examples/sample6.c" "[sample6]  Expression with parentheses"
+run_test "examples/sample7.c" "[sample7]  Nested expressions with parentheses"
+run_test "examples/sample8.c" "[sample8]  Multiplication"
+run_test "examples/sample9.c" "[sample9]  Division"
+run_test "examples/sample10.c" "[sample10] Multiplication with addition"
+run_test "examples/sample11.c" "[sample11] Complex nested expression"
 
 echo
 echo "========================================"
