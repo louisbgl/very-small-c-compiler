@@ -10,8 +10,8 @@ Statement          = ReturnStmt
 
 ReturnStmt         = "return" Expression ";"
 
-Expression         = PrimaryExpression | AdditiveExpression
+Expression         = AdditiveExpression
 
-PrimaryExpression  = NumberLiteral
+PrimaryExpression  = IntergerLiteral
 
-AdditiveExpression = PrimaryExpression ("+" | "-") PrimaryExpression
+AdditiveExpression = PrimaryExpression (("+" | "-") PrimaryExpression)*
