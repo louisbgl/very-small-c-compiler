@@ -19,7 +19,7 @@ struct NodeExpressionPrimary {
 };
 
 struct NodeExpressionBinary {
-    enum class BinaryOperator { Add, Subtract };
+    enum class BinaryOperator { Add, Subtract, Multiply, Divide };
     BinaryOperator op;
     std::unique_ptr<NodeExpression> left;
     std::unique_ptr<NodeExpression> right;
