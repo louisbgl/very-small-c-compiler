@@ -11,10 +11,12 @@ class NodeBuilder {
 public:
     // Expression builders
     static NodeExpression createPrimaryExpression(int value);
+    static NodeExpression createPrimaryExpression(NodeExpression expression);
     static NodeExpression createBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                 std::unique_ptr<NodeExpression> left,
                                                 std::unique_ptr<NodeExpression> right);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(int value);
+    static std::unique_ptr<NodeExpression> makePrimaryExpression(NodeExpression expression);
     static std::unique_ptr<NodeExpression> makeBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                                std::unique_ptr<NodeExpression> left,
                                                                std::unique_ptr<NodeExpression> right);

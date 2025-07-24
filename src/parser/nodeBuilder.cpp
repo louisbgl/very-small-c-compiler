@@ -5,9 +5,17 @@ namespace parser {
 // Expression builders
 NodeExpression NodeBuilder::createPrimaryExpression(int value) {
     NodeExpressionPrimary primary;
-    primary.intValue = value;
+    primary.value = value;
     NodeExpression expr;
-    expr.value = primary;
+    expr.value = std::move(primary);
+    return expr;
+}
+
+NodeExpression NodeBuilder::createPrimaryExpression(NodeExpression expression) {
+    NodeExpressionPrimary primary;
+    primary.value = std::make_unique<NodeExpression>(std::move(expression));
+    NodeExpression expr;
+    expr.value = std::move(primary);
     return expr;
 }
 
@@ -26,6 +34,12 @@ NodeExpression NodeBuilder::createBinaryExpression(NodeExpressionBinary::BinaryO
 std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(int value) {
     auto expr = std::make_unique<NodeExpression>();
     *expr = createPrimaryExpression(value);
+    return expr;
+}
+
+std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(NodeExpression expression) {
+    auto expr = std::make_unique<NodeExpression>();
+    *expr = createPrimaryExpression(std::move(expression));
     return expr;
 }
 
