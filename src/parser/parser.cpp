@@ -73,7 +73,7 @@ NodeExpression Parser::parseExpression() {
     int value = std::stoi(std::string(currentToken.lexeme));
     expectAndConsumeToken(TokenType::Number);
 
-    if (isBinaryOperator(currentToken) && peekToken(0).type == TokenType::Number) {
+    if (isBinaryOperator(currentToken) && peekToken().type == TokenType::Number) {
         auto op = getBinaryOperator(currentToken);
         consumeToken(); // Consume the operator token
 
