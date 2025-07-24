@@ -67,6 +67,11 @@ run: all
 	@echo "Running $(TARGET) with $(FILE)"
 	@$(TARGET) $(FILE)
 
+# Run tests
+test: all
+	@echo "Running test suite..."
+	@./test.sh
+
 # Install the compiler (to /usr/local/bin)
 install: all
 	@echo "Installing $(TARGET) to /usr/local/bin"
@@ -77,7 +82,7 @@ print-%:
 	@echo $* = $($*)
 
 # Phony targets
-.PHONY: all debug clean setup run install
+.PHONY: all debug clean setup run test install
 
 # Dependency tracking
 -include $(OBJS:.o=.d)

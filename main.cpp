@@ -46,6 +46,10 @@ int main(int argc, char* argv[]) {
     std::cout << "====== Emitting Assembly =====" << std::endl;
     compiler.emitAssembly();
     std::cout << "====== End of Assembly ======\n" << std::endl;
+
+    std::cout << "====== Assembling and Executing =====" << std::endl;
+    int exitCode = compiler.assembleAndExecute("output.s", "output");
+    std::cout << "====== End of Execution =====\n" << std::endl;
     
-    return 0;
+    return exitCode;
 }
