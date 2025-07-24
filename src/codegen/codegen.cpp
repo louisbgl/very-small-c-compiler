@@ -106,6 +106,13 @@ void CodeGenerator::visitExpressionBinary(const NodeExpressionBinary& binary) {
         case NodeExpressionBinary::BinaryOperator::Subtract:
             writeAsm("    sub rax, rbx\n");
             break;
+        case NodeExpressionBinary::BinaryOperator::Multiply:
+            writeAsm("    imul eax, ebx\n");
+            break;
+        case NodeExpressionBinary::BinaryOperator::Divide:
+            writeAsm("    cdq\n");
+            writeAsm("    idiv ebx\n");
+            break;
         default:
             throw std::runtime_error("[CodeGenerator::visitExpressionBinary] Unsupported operator");
     }
