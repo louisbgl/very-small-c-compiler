@@ -57,12 +57,43 @@ void CodeGenerator::visitStatement(const NodeStatement& statement) {
 }
 
 void CodeGenerator::visitExpression(const NodeExpression& expression) {
-    switch (expression.type) {
-        case NodeExpression::ExpressionType::IntegerLiteral:
-            writeAsm("    mov eax, " + std::to_string(expression.intValue) + "\n");
+    std::visit([this](const auto& expr) {
+        using T = std::decay_t<decltype(expr)>;
+        if constexpr (std::is_same_v<T, NodeExpressionPrimary>) {
+            visitExpressionPrimary(expr);
+        } else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
+            visitExpressionBinary(expr);
+        } else {
+            throw std::runtime_error("[CodeGenerator::visitExpression] Unknown expression type");
+        }
+    }, expression.value);
+}
+
+void CodeGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
+    writeAsm("    mov eax, " + std::to_string(primary.intValue) + "\n");
+}
+
+void CodeGenerator::visitExpressionBinary(const NodeExpressionBinary& binary) {
+    // Visit left operand
+    visitExpression(*binary.left);
+    writeAsm("    push eax\n"); // Save left operand result
+
+    // Visit right operand
+    visitExpression(*binary.right);
+    writeAsm("    mov ebx, eax\n"); // Move right operand result to ebx
+
+    writeAsm("    pop eax\n"); // Restore left operand result
+
+    // Apply binary operation: eax = eax (+|-) ebx
+    switch (binary.op) {
+        case NodeExpressionBinary::BinaryOperator::Add:
+            writeAsm("    add eax, ebx\n");
+            break;
+        case NodeExpressionBinary::BinaryOperator::Subtract:
+            writeAsm("    sub eax, ebx\n");
             break;
         default:
-            throw std::runtime_error("[CodeGenerator::visitExpression] Unknown expression type");
+            throw std::runtime_error("[CodeGenerator::visitExpressionBinary] Unsupported operator");
     }
 }
 

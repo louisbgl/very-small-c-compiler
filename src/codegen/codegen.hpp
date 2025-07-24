@@ -25,6 +25,8 @@ private:
     void visitCompoundStatement(const NodeCompoundStatement& compound);
     void visitStatement(const NodeStatement& statement);
     void visitExpression(const NodeExpression& expression);
+    void visitExpressionPrimary(const NodeExpressionPrimary& primary);
+    void visitExpressionBinary(const NodeExpressionBinary& binary);
 
 };
 
