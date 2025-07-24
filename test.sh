@@ -57,6 +57,8 @@ run_test "examples/sample2.c" 1 "Simple addition (0 + 1)"
 run_test "examples/sample3.c" 3 "Complex addition (0 + 1 + 2)"
 run_test "examples/sample4.c" 5 "Subtraction (7 - 2)"
 run_test "examples/sample5.c" 19 "Complex expression (0 + 1 + ... + 10)"
+run_test "examples/sample6.c" 0 "Expression with parentheses (1 + (2 - 3))"
+run_test "examples/sample7.c" 5 "Nested expressions with parentheses ((10 - 10) + 1 + (2 + 3 - (2 + 3 - 4)))"
 
 echo
 echo "========================================"
