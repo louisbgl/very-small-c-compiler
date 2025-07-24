@@ -19,7 +19,13 @@ void CodeGenerator::generateCode() {
     }
 
     writeAsm(".section .text\n");
-    writeAsm("    global main\n");
+    writeAsm("    .globl _start\n");
+    writeAsm("\n");
+    writeAsm("_start:\n");
+    writeAsm("    call main\n");
+    writeAsm("    movq %rax, %rdi\n");    // Move return value to exit code (first argument)
+    writeAsm("    movq $60, %rax\n");     // sys_exit system call number (64-bit)
+    writeAsm("    syscall\n");            // Invoke system call
     writeAsm("\n");
     writeAsm("main:\n");
 
@@ -70,27 +76,27 @@ void CodeGenerator::visitExpression(const NodeExpression& expression) {
 }
 
 void CodeGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
-    writeAsm("    mov eax, " + std::to_string(primary.intValue) + "\n");
+    writeAsm("    movq $" + std::to_string(primary.intValue) + ", %rax\n");
 }
 
 void CodeGenerator::visitExpressionBinary(const NodeExpressionBinary& binary) {
     // Visit left operand
     visitExpression(*binary.left);
-    writeAsm("    push eax\n"); // Save left operand result
+    writeAsm("    pushq %rax\n"); // Save left operand result
 
     // Visit right operand
     visitExpression(*binary.right);
-    writeAsm("    mov ebx, eax\n"); // Move right operand result to ebx
+    writeAsm("    movq %rax, %rbx\n"); // Move right operand result to rbx
 
-    writeAsm("    pop eax\n"); // Restore left operand result
+    writeAsm("    popq %rax\n"); // Restore left operand result
 
-    // Apply binary operation: eax = eax (+|-) ebx
+    // Apply binary operation: rax = rax (+|-) rbx
     switch (binary.op) {
         case NodeExpressionBinary::BinaryOperator::Add:
-            writeAsm("    add eax, ebx\n");
+            writeAsm("    addq %rbx, %rax\n");
             break;
         case NodeExpressionBinary::BinaryOperator::Subtract:
-            writeAsm("    sub eax, ebx\n");
+            writeAsm("    subq %rbx, %rax\n");
             break;
         default:
             throw std::runtime_error("[CodeGenerator::visitExpressionBinary] Unsupported operator");
