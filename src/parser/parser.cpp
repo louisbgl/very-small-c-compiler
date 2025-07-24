@@ -66,29 +66,35 @@ NodeStatement Parser::parseStatement() {
 }
 
 NodeExpression Parser::parseExpression() {
+    return parseAddSubExpression();
+}
+
+NodeExpression Parser::parseAddSubExpression() {
+    auto left = parsePrimaryExpression();
+    
+    while (isBinaryOperator(currentToken)) {
+        auto op = getBinaryOperator(currentToken);
+        consumeToken(); // Consume the operator
+        
+        auto right = parsePrimaryExpression();
+        
+        // Create binary expression with current left and right
+        auto leftPtr = std::make_unique<NodeExpression>(std::move(left));
+        auto rightPtr = std::make_unique<NodeExpression>(std::move(right));
+        left = NodeBuilder::createBinaryExpression(op, std::move(leftPtr), std::move(rightPtr));
+    }
+    
+    return left;
+}
+
+NodeExpression Parser::parsePrimaryExpression() {
     if (currentToken.type != TokenType::Number) {
-        throw std::runtime_error("[Parser::parseExpression] Expected an integer literal");
+        throw std::runtime_error("[Parser::parsePrimaryExpression] Expected an integer literal");
     }
 
     int value = std::stoi(std::string(currentToken.lexeme));
     expectAndConsumeToken(TokenType::Number);
-
-    if (isBinaryOperator(currentToken) && peekToken().type == TokenType::Number) {
-        auto op = getBinaryOperator(currentToken);
-        consumeToken(); // Consume the operator token
-
-        if (currentToken.type != TokenType::Number) {
-            throw std::runtime_error("[Parser::parseExpression] Expected a number after binary operator");
-        }
-        int rightValue = std::stoi(std::string(currentToken.lexeme));
-        expectAndConsumeToken(TokenType::Number);
-
-        auto leftExpr = NodeBuilder::makePrimaryExpression(value);
-        auto rightExpr = NodeBuilder::makePrimaryExpression(rightValue);
-        
-        return NodeBuilder::createBinaryExpression(op, std::move(leftExpr), std::move(rightExpr));
-    }
-
+    
     return NodeBuilder::createPrimaryExpression(value);
 }
 

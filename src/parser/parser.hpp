@@ -30,6 +30,8 @@ private:
     NodeCompoundStatement parseCompoundStatement();
     NodeStatement parseStatement();
     NodeExpression parseExpression();
+    NodeExpression parseAddSubExpression();
+    NodeExpression parsePrimaryExpression();
 
     /* Helper functions */
     void expectAndConsumeToken(TokenType expected);
