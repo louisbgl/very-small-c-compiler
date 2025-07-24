@@ -77,7 +77,14 @@ void CodeGenerator::visitExpression(const NodeExpression& expression) {
 }
 
 void CodeGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
-    writeAsm("    mov rax, " + std::to_string(primary.intValue) + "\n");
+    std::visit([this](const auto& value) {
+        using ValueType = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<ValueType, int>) {
+            writeAsm("    mov rax, " + std::to_string(value) + "\n");
+        } else if constexpr (std::is_same_v<ValueType, std::unique_ptr<NodeExpression>>) {
+            visitExpression(*value);
+        }
+    }, primary.value);
 }
 
 void CodeGenerator::visitExpressionBinary(const NodeExpressionBinary& binary) {
