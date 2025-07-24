@@ -14,8 +14,8 @@ struct NodeCompoundStatement;
 struct NodeStatement;
 struct NodeExpression;
 
-struct NodeExpressionPrimary { // Will be expanded later
-    int intValue;
+struct NodeExpressionPrimary {
+    std::variant<int, std::unique_ptr<NodeExpression>> value;
 };
 
 struct NodeExpressionBinary {
