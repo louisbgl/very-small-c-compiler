@@ -12,6 +12,6 @@ ReturnStmt         = "return" Expression ";"
 
 Expression         = AdditiveExpression
 
-PrimaryExpression  = IntergerLiteral
+PrimaryExpression  = IntegerLiteral | "(" Expression ")"
 
 AdditiveExpression = PrimaryExpression (("+" | "-") PrimaryExpression)*
