@@ -6,14 +6,24 @@ I'm building a tiny C compiler from scratch in C++! It takes simple C programs a
 
 ```c
 int main() {
-    return 5 + 3 - 2;  // Compiles to assembly and runs, exits with code 6
+    return 5 + 3 * 2 - 1;  // Compiles to assembly and runs, exits with code 10
+}
+
+int main() {
+    return (5 + 3) * 2;    // Parentheses for grouping, exits with code 16
+}
+
+int main() {
+    return 24 / (3 + 1);   // Division and grouping, exits with code 6
 }
 ```
 
 Currently supports:
 - `int main()` functions
 - Integer numbers
-- Basic math: `+` and `-`
+- Arithmetic operators: `+`, `-`, `*`, `/`
+- Parentheses `()` for expression grouping
+- Proper operator precedence (multiplication/division before addition/subtraction)
 - `return` statements
 
 ## Try it out
@@ -37,7 +47,7 @@ The output shows each step so you can see how a compiler works internally.
 ## Example output
 
 ```
-=> FILE: examples/sample2.c
+=> FILE: examples/sample8.c
 ====== Emitting Assembly =====
 .intel_syntax noprefix
 .section .text
@@ -50,16 +60,16 @@ _start:
     syscall
 
 main:
-    mov rax, 0
+    mov rax, 2
     push rax
-    mov rax, 1
+    mov rax, 3
     mov rbx, rax
     pop rax
-    add rax, rbx
+    imul rax, rbx    ; multiplication instruction
     ret
 ====== End of Assembly ======
 
-Program exited with code: 1
+Program exited with code: 6
 ```
 
 ## Why I built this
