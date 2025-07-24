@@ -15,8 +15,12 @@ public:
     /* Emit the final assembly code */
     void emitAssembly();
 
-    /* Print tokens and AST for debugging */
+    /* Save assembly to file and optionally execute */
+    void saveAssemblyToFile(const std::string& filename) const;
+    int assembleAndExecute(const std::string& asmFilename = "output.s", 
+                          const std::string& exeFilename = "output") const;
 
+    /* Print tokens and AST for debugging */
     void printTokens() const;
     void printAST() const;
     void printAssembly() const;
