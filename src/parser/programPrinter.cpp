@@ -1,4 +1,5 @@
 #include "programPrinter.hpp"
+#include <variant>
 
 namespace parser {
 
@@ -46,14 +47,35 @@ void ProgramPrinter::printStatement(const NodeStatement& statement) {
 }
 
 void ProgramPrinter::printExpression(const NodeExpression& expression) {
-    switch (expression.type) {
-        case NodeExpression::ExpressionType::IntegerLiteral:
-            std::cout << "Integer Literal: " << expression.intValue << std::endl;
-            break;
-        default:
-            std::cout << "Unknown expression type." << std::endl;
-            break;
-    }
+    std::visit([](const auto& expr) {
+        using T = std::decay_t<decltype(expr)>;
+        if constexpr (std::is_same_v<T, NodeExpressionPrimary>) {
+            std::cout << "Integer Literal: " << expr.intValue << std::endl;
+        }
+        else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
+            std::cout << "Binary Expression: ";
+            switch (expr.op) {
+                case NodeExpressionBinary::BinaryOperator::Add:
+                    std::cout << "Add" << std::endl;
+                    break;
+                case NodeExpressionBinary::BinaryOperator::Subtract:
+                    std::cout << "Subtract" << std::endl;
+                    break;
+            }
+            std::cout << "  Left: ";
+            if (expr.left) {
+                printExpression(*expr.left);
+            } else {
+                std::cout << "null" << std::endl;
+            }
+            std::cout << "  Right: ";
+            if (expr.right) {
+                printExpression(*expr.right);
+            } else {
+                std::cout << "null" << std::endl;
+            }
+        }
+    }, expression.value);
 }
 
 // Instance methods implementation (delegate to static methods)
