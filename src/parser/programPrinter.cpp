@@ -79,6 +79,12 @@ void ProgramPrinter::printExpressionBinary(const NodeExpressionBinary& binary) {
         case NodeExpressionBinary::BinaryOperator::Subtract:
             std::cout << "Subtract" << std::endl;
             break;
+        case NodeExpressionBinary::BinaryOperator::Multiply:
+            std::cout << "Multiply" << std::endl;
+            break;
+        case NodeExpressionBinary::BinaryOperator::Divide:
+            std::cout << "Divide" << std::endl;
+            break;
     }
     std::cout << "  Left: ";
     if (binary.left) {
