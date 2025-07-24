@@ -18,14 +18,15 @@ void CodeGenerator::generateCode() {
         return;
     }
 
+    writeAsm(".intel_syntax noprefix\n");
     writeAsm(".section .text\n");
     writeAsm("    .globl _start\n");
     writeAsm("\n");
     writeAsm("_start:\n");
     writeAsm("    call main\n");
-    writeAsm("    movq %rax, %rdi\n");    // Move return value to exit code (first argument)
-    writeAsm("    movq $60, %rax\n");     // sys_exit system call number (64-bit)
-    writeAsm("    syscall\n");            // Invoke system call
+    writeAsm("    mov rdi, rax\n");    // Move return value to exit code (first argument)
+    writeAsm("    mov rax, 60\n");     // sys_exit system call number (64-bit)
+    writeAsm("    syscall\n");         // Invoke system call
     writeAsm("\n");
     writeAsm("main:\n");
 
@@ -76,27 +77,27 @@ void CodeGenerator::visitExpression(const NodeExpression& expression) {
 }
 
 void CodeGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
-    writeAsm("    movq $" + std::to_string(primary.intValue) + ", %rax\n");
+    writeAsm("    mov rax, " + std::to_string(primary.intValue) + "\n");
 }
 
 void CodeGenerator::visitExpressionBinary(const NodeExpressionBinary& binary) {
     // Visit left operand
     visitExpression(*binary.left);
-    writeAsm("    pushq %rax\n"); // Save left operand result
+    writeAsm("    push rax\n"); // Save left operand result
 
     // Visit right operand
     visitExpression(*binary.right);
-    writeAsm("    movq %rax, %rbx\n"); // Move right operand result to rbx
+    writeAsm("    mov rbx, rax\n"); // Move right operand result to rbx
 
-    writeAsm("    popq %rax\n"); // Restore left operand result
+    writeAsm("    pop rax\n"); // Restore left operand result
 
     // Apply binary operation: rax = rax (+|-) rbx
     switch (binary.op) {
         case NodeExpressionBinary::BinaryOperator::Add:
-            writeAsm("    addq %rbx, %rax\n");
+            writeAsm("    add rax, rbx\n");
             break;
         case NodeExpressionBinary::BinaryOperator::Subtract:
-            writeAsm("    subq %rbx, %rax\n");
+            writeAsm("    sub rax, rbx\n");
             break;
         default:
             throw std::runtime_error("[CodeGenerator::visitExpressionBinary] Unsupported operator");

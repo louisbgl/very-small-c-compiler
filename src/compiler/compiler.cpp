@@ -58,7 +58,7 @@ int Compiler::assembleAndExecute(const std::string& asmFilename, const std::stri
     // Save assembly to file
     saveAssemblyToFile(asmFilename);
     
-    // Use GNU assembler (as) for x86-64
+    // Use GNU assembler (as) for x86-64 with Intel syntax
     std::string assembleCmd = "as --64 " + asmFilename + " -o " + exeFilename + ".o";
     std::string linkCmd = "ld " + exeFilename + ".o -o " + exeFilename;
     
