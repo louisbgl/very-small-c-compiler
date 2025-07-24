@@ -64,5 +64,5 @@ Program exited with code: 1
 
 ## Why I built this
 
-Compiler hard but when compiler work good!
+Compiler hard but when compiler work good!           
 Also good learning experience (looks good on resume maybe?).
