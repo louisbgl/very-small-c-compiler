@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nodes.hpp"
+#include "nodeBuilder.hpp"
 #include "../lexer/token.hpp"
 
 namespace lexer {
@@ -34,9 +35,13 @@ private:
     void expectAndConsumeToken(TokenType expected);
     void expectToken(TokenType expected);
     void consumeToken();
-    const Token& peekToken(int offset) const;
+
+    // Looks at the token after CurrentToken without consuming it (with optional offset to look ahead even more)
+    const Token& peekToken(int offset = 0) const;
     NodeStatement::StatementType findStatementType();
     NodeStatement parseReturnStatement();
+    bool isBinaryOperator(const Token& token) const;
+    NodeExpressionBinary::BinaryOperator getBinaryOperator(const Token& token) const;
 };
 
 } // namespace parser

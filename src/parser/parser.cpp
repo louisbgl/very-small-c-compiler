@@ -19,9 +19,8 @@ void Parser::printProgram() const {
 }
 
 std::unique_ptr<NodeProgram> Parser::parseProgram() {
-    auto program = std::make_unique<NodeProgram>();
-    program->main = std::make_unique<NodeFunction>(parseFunction());
-    return program;
+    auto mainFunction = parseFunction();
+    return NodeBuilder::createProgram(std::move(mainFunction));
 }
 
 NodeFunction Parser::parseFunction() {
@@ -34,11 +33,8 @@ NodeFunction Parser::parseFunction() {
     expectAndConsumeToken(TokenType::OpenParen);
     expectAndConsumeToken(TokenType::CloseParen);
 
-    NodeFunction function;
-    function.type = NodeFunction::FunctionType::Int;
-    function.name = std::move(functionName);
-    function.body = parseCompoundStatement();
-    return function;
+    auto body = parseCompoundStatement();
+    return NodeBuilder::createFunction(NodeFunction::FunctionType::Int, functionName, std::move(body));
 }
 
 NodeCompoundStatement Parser::parseCompoundStatement() {
@@ -62,9 +58,7 @@ NodeStatement Parser::parseStatement() {
             return parseReturnStatement();
         case NodeStatement::StatementType::Empty: {
             expectAndConsumeToken(TokenType::Semicolon);
-            NodeStatement statement;
-            statement.type = NodeStatement::StatementType::Empty;
-            return statement;
+            return NodeBuilder::createEmptyStatement();
         }
         default:
             throw std::runtime_error("[Parser::parseStatement] Unknown statement type");
@@ -72,17 +66,30 @@ NodeStatement Parser::parseStatement() {
 }
 
 NodeExpression Parser::parseExpression() {
-    if (currentToken.type == TokenType::Number) {
-        int value = std::stoi(std::string(currentToken.lexeme));
-        consumeToken(); // Consume number token
-
-        NodeExpression expression;
-        expression.type = NodeExpression::ExpressionType::IntegerLiteral;
-        expression.intValue = value;
-        return expression;
+    if (currentToken.type != TokenType::Number) {
+        throw std::runtime_error("[Parser::parseExpression] Expected an integer literal");
     }
 
-    throw std::runtime_error("[Parser::parseExpression] Expected an integer literal");
+    int value = std::stoi(std::string(currentToken.lexeme));
+    expectAndConsumeToken(TokenType::Number);
+
+    if (isBinaryOperator(currentToken) && peekToken(0).type == TokenType::Number) {
+        auto op = getBinaryOperator(currentToken);
+        consumeToken(); // Consume the operator token
+
+        if (currentToken.type != TokenType::Number) {
+            throw std::runtime_error("[Parser::parseExpression] Expected a number after binary operator");
+        }
+        int rightValue = std::stoi(std::string(currentToken.lexeme));
+        expectAndConsumeToken(TokenType::Number);
+
+        auto leftExpr = NodeBuilder::makePrimaryExpression(value);
+        auto rightExpr = NodeBuilder::makePrimaryExpression(rightValue);
+        
+        return NodeBuilder::createBinaryExpression(op, std::move(leftExpr), std::move(rightExpr));
+    }
+
+    return NodeBuilder::createPrimaryExpression(value);
 }
 
 void Parser::expectAndConsumeToken(TokenType expected) {
@@ -120,12 +127,23 @@ NodeStatement::StatementType Parser::findStatementType() {
 NodeStatement Parser::parseReturnStatement() {
     expectAndConsumeToken(TokenType::Keyword_return);
 
-    NodeStatement returnStatement;
-    returnStatement.type = NodeStatement::StatementType::Return;
-    returnStatement.expression = parseExpression();
-    
+    auto expression = parseExpression();
     expectAndConsumeToken(TokenType::Semicolon);
-    return returnStatement;
+    
+    return NodeBuilder::createReturnStatement(std::move(expression));
+}
+
+bool Parser::isBinaryOperator(const Token& token) const {
+    return token.type == TokenType::Plus || token.type == TokenType::Minus;
+}
+
+NodeExpressionBinary::BinaryOperator Parser::getBinaryOperator(const Token& token) const {
+    switch (token.type) {
+        case TokenType::Plus: return NodeExpressionBinary::BinaryOperator::Add;
+        case TokenType::Minus: return NodeExpressionBinary::BinaryOperator::Subtract;
+        default:
+            throw std::runtime_error("[Parser::getBinaryOperator] Not a binary operator");
+    }
 }
 
 } // namespace parser
