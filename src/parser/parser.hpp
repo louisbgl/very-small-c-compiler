@@ -31,6 +31,7 @@ private:
     NodeStatement parseStatement();
     NodeExpression parseExpression();
     NodeExpression parseAddSubExpression();
+    NodeExpression parseMultDivExpression();
     NodeExpression parsePrimaryExpression();
 
     /* Helper functions */
@@ -42,7 +43,8 @@ private:
     const Token& peekToken(int offset = 0) const;
     NodeStatement::StatementType findStatementType();
     NodeStatement parseReturnStatement();
-    bool isBinaryOperator(const Token& token) const;
+    bool isAddSubBinaryOperator(const Token& token) const;
+    bool isMultDivBinaryOperator(const Token& token) const;
     NodeExpressionBinary::BinaryOperator getBinaryOperator(const Token& token) const;
 };
 

@@ -70,9 +70,27 @@ NodeExpression Parser::parseExpression() {
 }
 
 NodeExpression Parser::parseAddSubExpression() {
-    auto left = parsePrimaryExpression();
+    auto left = parseMultDivExpression();
+
+    while (isAddSubBinaryOperator(currentToken)) {
+        auto op = getBinaryOperator(currentToken);
+        consumeToken(); // Consume the operator
+        
+        auto right = parsePrimaryExpression();
+        
+        // Create binary expression with current left and right
+        auto leftPtr = std::make_unique<NodeExpression>(std::move(left));
+        auto rightPtr = std::make_unique<NodeExpression>(std::move(right));
+        left = NodeBuilder::createBinaryExpression(op, std::move(leftPtr), std::move(rightPtr));
+    }
     
-    while (isBinaryOperator(currentToken)) {
+    return left;
+}
+
+NodeExpression Parser::parseMultDivExpression() {
+    auto left = parsePrimaryExpression();
+
+    while (isMultDivBinaryOperator(currentToken)) {
         auto op = getBinaryOperator(currentToken);
         consumeToken(); // Consume the operator
         
@@ -145,14 +163,20 @@ NodeStatement Parser::parseReturnStatement() {
     return NodeBuilder::createReturnStatement(std::move(expression));
 }
 
-bool Parser::isBinaryOperator(const Token& token) const {
+bool Parser::isAddSubBinaryOperator(const Token& token) const {
     return token.type == TokenType::Plus || token.type == TokenType::Minus;
+}
+
+bool Parser::isMultDivBinaryOperator(const Token& token) const {
+    return token.type == TokenType::Star || token.type == TokenType::Slash;
 }
 
 NodeExpressionBinary::BinaryOperator Parser::getBinaryOperator(const Token& token) const {
     switch (token.type) {
         case TokenType::Plus: return NodeExpressionBinary::BinaryOperator::Add;
         case TokenType::Minus: return NodeExpressionBinary::BinaryOperator::Subtract;
+        case TokenType::Star: return NodeExpressionBinary::BinaryOperator::Multiply;
+        case TokenType::Slash: return NodeExpressionBinary::BinaryOperator::Divide;
         default:
             throw std::runtime_error("[Parser::getBinaryOperator] Not a binary operator");
     }
