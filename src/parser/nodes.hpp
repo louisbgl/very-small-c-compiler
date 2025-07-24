@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <variant>
 
 /* Forward declarations */
 
@@ -13,10 +14,19 @@ struct NodeCompoundStatement;
 struct NodeStatement;
 struct NodeExpression;
 
-struct NodeExpression {
-    enum class ExpressionType { IntegerLiteral };
-    ExpressionType type;
+struct NodeExpressionPrimary { // Will be expanded later
     int intValue;
+};
+
+struct NodeExpressionBinary {
+    enum class BinaryOperator { Add, Subtract };
+    BinaryOperator op;
+    std::unique_ptr<NodeExpression> left;
+    std::unique_ptr<NodeExpression> right;
+};
+
+struct NodeExpression {
+    std::variant<NodeExpressionPrimary, NodeExpressionBinary> value;
 };
 
 struct NodeStatement {
