@@ -29,8 +29,10 @@ struct NodeExpression {
     std::variant<NodeExpressionPrimary, NodeExpressionBinary> value;
 };
 
+struct NodeStatementEmpty { };
+
 struct NodeStatementReturn {
-    NodeExpression expression;
+    std::optional<NodeExpression> expression;
 };
 
 struct NodeStatementVarDecl {
@@ -44,7 +46,10 @@ struct NodeStatementAssignment {
 };
 
 struct NodeStatement {
-    std::variant<NodeStatementReturn, NodeStatementVarDecl, NodeStatementAssignment> value;
+    std::variant<NodeStatementEmpty,
+                 NodeStatementReturn,
+                 NodeStatementVarDecl,
+                 NodeStatementAssignment> value;
 };
 
 struct NodeCompoundStatement {
