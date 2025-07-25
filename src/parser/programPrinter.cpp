@@ -28,22 +28,24 @@ void ProgramPrinter::printCompoundStatement(const NodeCompoundStatement& compoun
 }
 
 void ProgramPrinter::printStatement(const NodeStatement& statement) {
-    switch (statement.type) {
-        case NodeStatement::StatementType::Empty:
-            std::cout << "  Empty statement." << std::endl;
-            break;
-        case NodeStatement::StatementType::Return:
-            std::cout << "  Return statement with expression: ";
-            if (statement.expression) {
-                printExpression(*statement.expression);
-            } else {
-                std::cout << "No expression." << std::endl;
-            }
-            break;
-        default:
+    std::visit([](const auto& stmt) {
+        using T = std::decay_t<decltype(stmt)>;
+        if constexpr (std::is_same_v<T, NodeStatementEmpty>) {
+            ProgramPrinter::printStatementEmpty(stmt);
+        }
+        else if constexpr (std::is_same_v<T, NodeStatementReturn>) {
+            ProgramPrinter::printStatementReturn(stmt);
+        }
+        else if constexpr (std::is_same_v<T, NodeStatementVarDecl>) {
+            ProgramPrinter::printStatementVarDecl(stmt);
+        }
+        else if constexpr (std::is_same_v<T, NodeStatementAssignment>) {
+            ProgramPrinter::printStatementAssignment(stmt);
+        }
+        else {
             std::cout << "  Unknown statement type." << std::endl;
-            break;
-    }
+        }
+    }, statement.value);
 }
 
 void ProgramPrinter::printExpression(const NodeExpression& expression) {
@@ -63,6 +65,8 @@ void ProgramPrinter::printExpressionPrimary(const NodeExpressionPrimary& primary
         using ValueType = std::decay_t<decltype(value)>;
         if constexpr (std::is_same_v<ValueType, int>) {
             std::cout << "Integer Literal: " << value << std::endl;
+        } else if constexpr (std::is_same_v<ValueType, std::string>) {
+            std::cout << "Identifier: " << value << std::endl;
         } else if constexpr (std::is_same_v<ValueType, std::unique_ptr<NodeExpression>>) {
             std::cout << "Grouped Expression: " << std::endl;
             ProgramPrinter::printExpression(*value);
@@ -98,6 +102,35 @@ void ProgramPrinter::printExpressionBinary(const NodeExpressionBinary& binary) {
     } else {
         std::cout << "null" << std::endl;
     }
+}
+
+void ProgramPrinter::printStatementEmpty([[maybe_unused]] const NodeStatementEmpty& empty) {
+    std::cout << "  Empty statement." << std::endl;
+}
+
+void ProgramPrinter::printStatementReturn(const NodeStatementReturn& returnStmt) {
+    std::cout << "  Return statement";
+    if (returnStmt.expression.has_value()) {
+        std::cout << " with expression: ";
+        printExpression(returnStmt.expression.value());
+    } else {
+        std::cout << " with no expression." << std::endl;
+    }
+}
+
+void ProgramPrinter::printStatementVarDecl(const NodeStatementVarDecl& varDecl) {
+    std::cout << "  Variable declaration: " << varDecl.identifier;
+    if (varDecl.initializer.has_value()) {
+        std::cout << " with initializer: ";
+        printExpression(varDecl.initializer.value());
+    } else {
+        std::cout << " with no initializer." << std::endl;
+    }
+}
+
+void ProgramPrinter::printStatementAssignment(const NodeStatementAssignment& assignment) {
+    std::cout << "  Assignment to " << assignment.identifier << " with expression: ";
+    printExpression(assignment.expression);
 }
 
 // Instance methods implementation (delegate to static methods)

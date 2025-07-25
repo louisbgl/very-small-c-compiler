@@ -17,6 +17,10 @@ public:
     // Helper functions for specific node types
     static void printExpressionPrimary(const NodeExpressionPrimary& primary);
     static void printExpressionBinary(const NodeExpressionBinary& binary);
+    static void printStatementEmpty(const NodeStatementEmpty& empty);
+    static void printStatementReturn(const NodeStatementReturn& returnStmt);
+    static void printStatementVarDecl(const NodeStatementVarDecl& varDecl);
+    static void printStatementAssignment(const NodeStatementAssignment& assignment);
 
     // Instance interface (if needed for future extensibility)
     ProgramPrinter() = default;
