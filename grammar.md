@@ -22,4 +22,4 @@ AdditiveExpression       = MultiplicativeExpression (("+" | "-") MultiplicativeE
 
 MultiplicativeExpression = PrimaryExpression (("*" | "/") PrimaryExpression)*
 
-PrimaryExpression        = IntegerLiteral | "(" Expression ")"
+PrimaryExpression        = IntegerLiteral | Identifier | "(" Expression ")"
