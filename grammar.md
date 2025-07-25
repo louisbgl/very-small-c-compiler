@@ -1,19 +1,25 @@
-Program            = FunctionDecl
+Program                  = FunctionDecl
 
-FunctionDecl       = Type Identifier "(" ")" CompoundStmt
+FunctionDecl             = Type Identifier "(" ")" CompoundStmt
 
-Type               = "int"
+Type                     = "int"
 
-CompoundStmt       = "{" Statement* "}"
+Identifier               = [a-zA-Z_][a-zA-Z0-9_]*
 
-Statement          = ReturnStmt
+CompoundStmt             = "{" Statement* "}"
 
-ReturnStmt         = "return" Expression ";"
+Statement                = ReturnStmt | VariableDeclaration | Assignment
 
-Expression         = AdditiveExpression
+ReturnStmt               = "return" Expression ";"
 
-AdditiveExpression = MultiplicativeExpression (("+" | "-") MultiplicativeExpression)*
+VariableDeclaration      = Type Identifier ("=" Expression)? ";"
+
+Assignment               = Identifier "=" Expression ";"
+
+Expression               = AdditiveExpression
+
+AdditiveExpression       = MultiplicativeExpression (("+" | "-") MultiplicativeExpression)*
 
 MultiplicativeExpression = PrimaryExpression (("*" | "/") PrimaryExpression)*
 
-PrimaryExpression  = IntegerLiteral | "(" Expression ")"
+PrimaryExpression        = IntegerLiteral | "(" Expression ")"
