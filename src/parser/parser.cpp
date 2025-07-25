@@ -149,7 +149,6 @@ NodeExpression Parser::parseMultDivExpression() {
 }
 
 NodeExpression Parser::parsePrimaryExpression() {
-    std::cout << "[Parser::parsePrimaryExpression] DEBUG Current Token: " << currentToken.ToString() << std::endl;
     if (currentToken.type == TokenType::Number) {
         int value = std::stoi(std::string(currentToken.lexeme));
         expectAndConsumeToken(TokenType::Number);
