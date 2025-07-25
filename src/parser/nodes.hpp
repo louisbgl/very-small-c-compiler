@@ -29,10 +29,22 @@ struct NodeExpression {
     std::variant<NodeExpressionPrimary, NodeExpressionBinary> value;
 };
 
+struct NodeStatementReturn {
+    NodeExpression expression;
+};
+
+struct NodeStatementVarDecl {
+    std::string identifier;
+    std::optional<NodeExpression> initializer;
+};
+
+struct NodeStatementAssignment {
+    std::string identifier;
+    NodeExpression expression;
+};
+
 struct NodeStatement {
-    enum class StatementType { Empty, Return };
-    StatementType type;
-    std::optional<NodeExpression> expression;
+    std::variant<NodeStatementReturn, NodeStatementVarDecl, NodeStatementAssignment> value;
 };
 
 struct NodeCompoundStatement {
