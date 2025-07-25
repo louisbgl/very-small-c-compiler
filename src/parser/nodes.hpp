@@ -15,7 +15,7 @@ struct NodeStatement;
 struct NodeExpression;
 
 struct NodeExpressionPrimary {
-    std::variant<int, std::unique_ptr<NodeExpression>> value;
+    std::variant<int, std::string, std::unique_ptr<NodeExpression>> value;
 };
 
 struct NodeExpressionBinary {
