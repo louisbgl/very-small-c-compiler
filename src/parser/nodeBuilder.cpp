@@ -6,25 +6,19 @@ namespace parser {
 NodeExpression NodeBuilder::createPrimaryExpression(int value) {
     NodeExpressionPrimary primary;
     primary.value = value;
-    NodeExpression expr;
-    expr.value = std::move(primary);
-    return expr;
+    return NodeExpression{std::move(primary)};
 }
 
 NodeExpression NodeBuilder::createPrimaryExpression(const std::string& identifier) {
     NodeExpressionPrimary primary;
     primary.value = identifier;
-    NodeExpression expr;
-    expr.value = std::move(primary);
-    return expr;
+    return NodeExpression{std::move(primary)};
 }
 
 NodeExpression NodeBuilder::createPrimaryExpression(NodeExpression expression) {
     NodeExpressionPrimary primary;
     primary.value = std::make_unique<NodeExpression>(std::move(expression));
-    NodeExpression expr;
-    expr.value = std::move(primary);
-    return expr;
+    return NodeExpression{std::move(primary)};
 }
 
 NodeExpression NodeBuilder::createBinaryExpression(NodeExpressionBinary::BinaryOperator op,
@@ -34,9 +28,7 @@ NodeExpression NodeBuilder::createBinaryExpression(NodeExpressionBinary::BinaryO
     binary.op = op;
     binary.left = std::move(left);
     binary.right = std::move(right);
-    NodeExpression expr;
-    expr.value = std::move(binary);
-    return expr;
+    return NodeExpression{std::move(binary)};
 }
 
 std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(int value) {
