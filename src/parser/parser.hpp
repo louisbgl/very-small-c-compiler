@@ -29,6 +29,9 @@ private:
     NodeFunction parseFunction();
     NodeCompoundStatement parseCompoundStatement();
     NodeStatement parseStatement();
+    NodeStatement parseReturnStatement();
+    NodeStatement parseVariableDeclaration();
+    NodeStatement parseAssignmentStatement();
     NodeExpression parseExpression();
     NodeExpression parseAddSubExpression();
     NodeExpression parseMultDivExpression();
@@ -41,8 +44,7 @@ private:
 
     // Looks at the token after CurrentToken without consuming it (with optional offset to look ahead even more)
     const Token& peekToken(int offset = 0) const;
-    NodeStatement::StatementType findStatementType();
-    NodeStatement parseReturnStatement();
+
     bool isAddSubBinaryOperator(const Token& token) const;
     bool isMultDivBinaryOperator(const Token& token) const;
     NodeExpressionBinary::BinaryOperator getBinaryOperator(const Token& token) const;

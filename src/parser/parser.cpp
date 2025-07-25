@@ -51,18 +51,61 @@ NodeCompoundStatement Parser::parseCompoundStatement() {
 }
 
 NodeStatement Parser::parseStatement() {
-    NodeStatement::StatementType statementType = findStatementType();
-
-    switch (statementType) {
-        case NodeStatement::StatementType::Return:
-            return parseReturnStatement();
-        case NodeStatement::StatementType::Empty: {
-            expectAndConsumeToken(TokenType::Semicolon);
-            return NodeBuilder::createEmptyStatement();
-        }
-        default:
-            throw std::runtime_error("[Parser::parseStatement] Unknown statement type");
+    if (currentToken.type == TokenType::Semicolon) {
+        return NodeBuilder::createEmptyStatement();
     }
+    else if (currentToken.type == TokenType::Keyword_return) {
+        return parseReturnStatement();
+    }
+    else if (currentToken.type == TokenType::Keyword_int) {
+        return parseVariableDeclaration();
+    }
+    else if (currentToken.type == TokenType::Identifier) {
+        return parseAssignmentStatement();
+    }
+    else {
+        throw std::runtime_error("[Parser::parseStatement] Unexpected token: " + currentToken.ToString());
+    }
+}
+
+NodeStatement Parser::parseReturnStatement() {
+    expectAndConsumeToken(TokenType::Keyword_return);
+
+    auto expression = parseExpression();
+    expectAndConsumeToken(TokenType::Semicolon);
+    
+    return NodeBuilder::createReturnStatement(std::move(expression));
+}
+
+NodeStatement Parser::parseVariableDeclaration() {
+    expectAndConsumeToken(TokenType::Keyword_int);
+
+    expectToken(TokenType::Identifier);
+    std::string identifier = static_cast<std::string>(currentToken.lexeme);
+    consumeToken(); // Consume identifier token
+
+    std::optional<NodeExpression> initializer;
+    if (currentToken.type == TokenType::Equal) {
+        consumeToken(); // Consume '='
+        initializer = parseExpression();
+    }
+
+    expectAndConsumeToken(TokenType::Semicolon);
+    
+    return NodeBuilder::createVariableDeclaration(identifier, std::move(initializer));
+}
+
+NodeStatement Parser::parseAssignmentStatement() {
+    expectToken(TokenType::Identifier);
+    std::string identifier = static_cast<std::string>(currentToken.lexeme);
+    consumeToken(); // Consume identifier token
+
+    expectAndConsumeToken(TokenType::Equal);
+    auto expression = parseExpression();
+    
+    expectAndConsumeToken(TokenType::Semicolon);
+    
+    return NodeBuilder::createAssignment(identifier, std::move(expression));
 }
 
 NodeExpression Parser::parseExpression() {
@@ -106,10 +149,16 @@ NodeExpression Parser::parseMultDivExpression() {
 }
 
 NodeExpression Parser::parsePrimaryExpression() {
+    std::cout << "[Parser::parsePrimaryExpression] DEBUG Current Token: " << currentToken.ToString() << std::endl;
     if (currentToken.type == TokenType::Number) {
         int value = std::stoi(std::string(currentToken.lexeme));
         expectAndConsumeToken(TokenType::Number);
         return NodeBuilder::createPrimaryExpression(value);
+    }
+    else if (currentToken.type == TokenType::Identifier) {
+        std::string identifier = static_cast<std::string>(currentToken.lexeme);
+        expectAndConsumeToken(TokenType::Identifier);
+        return NodeBuilder::createPrimaryExpression(identifier);
     }
     else if (currentToken.type == TokenType::OpenParen) {
         expectAndConsumeToken(TokenType::OpenParen);
@@ -118,7 +167,7 @@ NodeExpression Parser::parsePrimaryExpression() {
         return NodeBuilder::createPrimaryExpression(std::move(expression));
     }
     else {
-        throw std::runtime_error("[Parser::parsePrimaryExpression] Expected an integer literal or an expression in parentheses");
+        throw std::runtime_error("[Parser::parsePrimaryExpression] Expected an integer literal, an identifier or an expression in parentheses");
     }
 }
 
@@ -140,27 +189,6 @@ void Parser::consumeToken() {
 
 const Token& Parser::peekToken(int offset) const {
     return lexer.peekToken(offset);
-}
-
-NodeStatement::StatementType Parser::findStatementType() {
-    if (currentToken.type == TokenType::Semicolon) {
-        return NodeStatement::StatementType::Empty;
-    }
-
-    if (currentToken.type == TokenType::Keyword_return) {
-        return NodeStatement::StatementType::Return;
-    }
-
-    throw std::runtime_error("[Parser::findStatementType] Unknown statement type");
-}
-
-NodeStatement Parser::parseReturnStatement() {
-    expectAndConsumeToken(TokenType::Keyword_return);
-
-    auto expression = parseExpression();
-    expectAndConsumeToken(TokenType::Semicolon);
-    
-    return NodeBuilder::createReturnStatement(std::move(expression));
 }
 
 bool Parser::isAddSubBinaryOperator(const Token& token) const {
