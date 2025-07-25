@@ -11,11 +11,13 @@ class NodeBuilder {
 public:
     // Expression builders
     static NodeExpression createPrimaryExpression(int value);
+    static NodeExpression createPrimaryExpression(const std::string& identifier);
     static NodeExpression createPrimaryExpression(NodeExpression expression);
     static NodeExpression createBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                 std::unique_ptr<NodeExpression> left,
                                                 std::unique_ptr<NodeExpression> right);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(int value);
+    static std::unique_ptr<NodeExpression> makePrimaryExpression(const std::string& identifier);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(NodeExpression expression);
     static std::unique_ptr<NodeExpression> makeBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                                std::unique_ptr<NodeExpression> left,
@@ -23,8 +25,10 @@ public:
     
     // Statement builders
     static NodeStatement createEmptyStatement();
-    static NodeStatement createReturnStatement(NodeExpression expression);
     static NodeStatement createReturnStatement(std::optional<NodeExpression> expression = std::nullopt);
+    static NodeStatement createVariableDeclaration(const std::string& identifier, 
+                                                   std::optional<NodeExpression> initializer = std::nullopt);
+    static NodeStatement createAssignment(const std::string& identifier, NodeExpression expression);
     
     // Compound statement builders
     static NodeCompoundStatement createCompoundStatement();

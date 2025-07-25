@@ -11,6 +11,14 @@ NodeExpression NodeBuilder::createPrimaryExpression(int value) {
     return expr;
 }
 
+NodeExpression NodeBuilder::createPrimaryExpression(const std::string& identifier) {
+    NodeExpressionPrimary primary;
+    primary.value = identifier;
+    NodeExpression expr;
+    expr.value = std::move(primary);
+    return expr;
+}
+
 NodeExpression NodeBuilder::createPrimaryExpression(NodeExpression expression) {
     NodeExpressionPrimary primary;
     primary.value = std::make_unique<NodeExpression>(std::move(expression));
@@ -37,6 +45,12 @@ std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(int value) {
     return expr;
 }
 
+std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(const std::string& identifier) {
+    auto expr = std::make_unique<NodeExpression>();
+    *expr = createPrimaryExpression(identifier);
+    return expr;
+}
+
 std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(NodeExpression expression) {
     auto expr = std::make_unique<NodeExpression>();
     *expr = createPrimaryExpression(std::move(expression));
@@ -54,23 +68,45 @@ std::unique_ptr<NodeExpression> NodeBuilder::makeBinaryExpression(NodeExpression
 // Statement builders
 NodeStatement NodeBuilder::createEmptyStatement() {
     NodeStatement statement;
-    statement.type = NodeStatement::StatementType::Empty;
-    return statement;
-}
-
-NodeStatement NodeBuilder::createReturnStatement(NodeExpression expression) {
-    NodeStatement statement;
-    statement.type = NodeStatement::StatementType::Return;
-    statement.expression = std::move(expression);
+    statement.value = NodeStatementEmpty{};
     return statement;
 }
 
 NodeStatement NodeBuilder::createReturnStatement(std::optional<NodeExpression> expression) {
+    NodeStatementReturn returnStmt;
+    if (expression.has_value()) {
+        returnStmt.expression = std::move(expression.value());
+    }
+    
     NodeStatement statement;
-    statement.type = NodeStatement::StatementType::Return;
-    statement.expression = std::move(expression);
+    statement.value = std::move(returnStmt);
     return statement;
 }
+
+NodeStatement NodeBuilder::createVariableDeclaration(const std::string& identifier, 
+                                                   std::optional<NodeExpression> initializer) {
+    NodeStatementVarDecl varDecl;
+    varDecl.identifier = identifier;
+    if (initializer.has_value()) {
+        varDecl.initializer = std::move(initializer.value());
+    }
+    
+    NodeStatement statement;
+    statement.value = std::move(varDecl);
+    return statement;
+}
+
+NodeStatement NodeBuilder::createAssignment(const std::string& identifier, NodeExpression expression) {
+    NodeStatementAssignment assignment;
+    assignment.identifier = identifier;
+    assignment.expression = std::move(expression);
+    
+    NodeStatement statement;
+    statement.value = std::move(assignment);
+    return statement;
+}
+
+
 
 // Compound statement builders
 NodeCompoundStatement NodeBuilder::createCompoundStatement() {
