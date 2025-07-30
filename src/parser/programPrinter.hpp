@@ -9,18 +9,19 @@ class ProgramPrinter {
 public:
     // Static interface for easy usage
     static void printProgram(const NodeProgram& program);
-    static void printFunction(const NodeFunction& function);
-    static void printCompoundStatement(const NodeCompoundStatement& compound);
-    static void printStatement(const NodeStatement& statement);
-    static void printExpression(const NodeExpression& expression);
+    static void printFunction(const NodeFunction& function, int indent = 0);
+    static void printCompoundStatement(const NodeCompoundStatement& compound, int indent = 0);
+    static void printStatement(const NodeStatement& statement, int indent = 0);
+    static void printExpression(const NodeExpression& expression, int indent = 0);
     
     // Helper functions for specific node types
-    static void printExpressionPrimary(const NodeExpressionPrimary& primary);
-    static void printExpressionBinary(const NodeExpressionBinary& binary);
-    static void printStatementEmpty(const NodeStatementEmpty& empty);
-    static void printStatementReturn(const NodeStatementReturn& returnStmt);
-    static void printStatementVarDecl(const NodeStatementVarDecl& varDecl);
-    static void printStatementAssignment(const NodeStatementAssignment& assignment);
+    static void printExpressionPrimary(const NodeExpressionPrimary& primary, int indent = 0);
+    static void printExpressionBinary(const NodeExpressionBinary& binary, int indent = 0);
+    static void printStatementEmpty(const NodeStatementEmpty& empty, int indent = 0);
+    static void printStatementReturn(const NodeStatementReturn& returnStmt, int indent = 0);
+    static void printStatementVarDecl(const NodeStatementVarDecl& varDecl, int indent = 0);
+    static void printStatementAssignment(const NodeStatementAssignment& assignment, int indent = 0);
+    static void printStatementIf(const NodeStatementIf& ifStmt, int indent = 0);
 
     // Instance interface (if needed for future extensibility)
     ProgramPrinter() = default;
