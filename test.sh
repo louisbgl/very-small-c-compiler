@@ -83,6 +83,8 @@ run_test "examples/sample11.c" "[sample11] Complex nested expression"
 run_test "examples/sample12.c" "[sample12] Variable assignment and usage"
 run_test "examples/sample13.c" "[sample13] Variable assignements and complex usage"
 run_test "examples/sample14.c" "[sample14] Variable assignment with arithmetic"
+run_test "examples/sample15.c" "[sample15] Simple if statement"
+run_test "examples/sample16.c" "[sample16] Nested if statements and arithmetic"
 
 echo
 echo "========================================"
