@@ -16,7 +16,7 @@ std::unique_ptr<ScopeNode> VisitorAnalyzer::releaseRootScope() {
 
 void VisitorAnalyzer::analyze(const NodeProgram& ast) {
     if (!rootScope) {
-        throw std::runtime_error("Root scope is not initialized");
+        throw std::runtime_error("[VisitorAnalyzer::analyze] Root scope is not initialized");
     }
 
     visitFunction(*ast.main);
@@ -47,8 +47,10 @@ void VisitorAnalyzer::visitStatement(const NodeStatement& statement) {
             visitStatementVarDecl(stmt);
         } else if constexpr (std::is_same_v<T, NodeStatementAssignment>) {
             // OPTIONAL type checking for assignments
+        } else if constexpr (std::is_same_v<T, NodeStatementIf>) {
+            visitStatementIf(stmt);
         } else {
-            throw std::runtime_error("[VisitorAnaliser::visitStatement] Unknown statement type");
+            throw std::runtime_error("[VisitorAnalyzer::visitStatement] Unknown statement type");
         }
     }, statement.value);
 }
@@ -73,7 +75,7 @@ void VisitorAnalyzer::visitStatementVarDecl(const NodeStatementVarDecl& varDecl)
     int size = 8; // Use 64-bit integers
 
     if (currentScope->getOffset(name)) {
-        throw std::runtime_error("Variable '" + name + "' already declared in this scope");
+        throw std::runtime_error("[VisitorAnalyzer::visitStatementVarDecl] Variable '" + name + "' already declared in this scope");
     }
 
     currentScope->addVariable(name, type, size);
@@ -83,13 +85,21 @@ void VisitorAnalyzer::visitStatementVarDecl(const NodeStatementVarDecl& varDecl)
     }
 }
 
+void VisitorAnalyzer::visitStatementIf(const NodeStatementIf& ifStmt) {
+    visitExpression(ifStmt.condition);
+    if (ifStmt.body) {
+        visitCompoundStatement(*ifStmt.body);
+    } else {
+        throw std::runtime_error("[VisitorAnalyzer::visitStatementIf] If statement body is null");
+    }
+}
 
 void VisitorAnalyzer::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
     if (std::holds_alternative<std::string>(primary.value)) {
         const std::string& varName = std::get<std::string>(primary.value);
 
         if (!currentScope->getOffsetRecursive(varName)) {
-            throw std::runtime_error("Use of undeclared variable '" + varName + "'");
+            throw std::runtime_error("[VisitorAnalyzer::visitExpressionPrimary] Use of undeclared variable '" + varName + "'");
         }
     }
 }

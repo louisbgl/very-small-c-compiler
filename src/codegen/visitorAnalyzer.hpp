@@ -20,6 +20,7 @@ private:
     void visitExpression(const NodeExpression& expression);
 
     void visitStatementVarDecl(const NodeStatementVarDecl& varDecl);
+    void visitStatementIf(const NodeStatementIf& ifStmt);
     
     void visitExpressionPrimary(const NodeExpressionPrimary& primary);
     void visitExpressionBinary(const NodeExpressionBinary& binary);
