@@ -10,6 +10,7 @@ enum class TokenType {
     // Keywords
     Keyword_int,
     Keyword_return,
+    Keyword_if,
 
     // Identifiers and literals
     Identifier,
@@ -35,6 +36,7 @@ inline const std::string tokenTypeToString(TokenType type) {
         case TokenType::EndOfFile: return "EndOfFile";
         case TokenType::Keyword_int: return "Keyword_int";
         case TokenType::Keyword_return: return "Keyword_return";
+        case TokenType::Keyword_if: return "Keyword_if";
         case TokenType::Identifier: return "Identifier";
         case TokenType::String: return "String";
         case TokenType::Number: return "Number";

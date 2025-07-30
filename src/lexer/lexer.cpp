@@ -13,7 +13,7 @@ struct KeywordEntry {
 static const KeywordEntry keywords[] = {
     {"int", TokenType::Keyword_int},
     {"return", TokenType::Keyword_return},
-    // Add more keywords here as needed
+    {"if", TokenType::Keyword_if},
 };
 
 // Returns a safe EOF token when needed
