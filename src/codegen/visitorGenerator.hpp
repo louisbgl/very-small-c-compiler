@@ -1,0 +1,30 @@
+#pragma once
+
+#include "astVisitor.hpp"
+#include "scopeNode.hpp"
+
+class VisitorGenerator : public AstVisitor<VisitorGenerator> {
+public:
+    VisitorGenerator(ScopeNode* rootScope);
+
+    std::string generate(const NodeProgram& ast);
+    
+private:
+    std::string asmOutput;
+    ScopeNode* currentScope;
+    int childScopeIndex;
+    
+    void visitFunction(const NodeFunction& function);
+    void visitCompoundStatement(const NodeCompoundStatement& compound);
+    void visitStatement(const NodeStatement& statement);
+    void visitExpression(const NodeExpression& expression);
+
+    void visitStatementVarDecl(const NodeStatementVarDecl& varDecl);
+    void visitStatementReturn(const NodeStatementReturn& returnStmt);
+    void visitStatementAssignment(const NodeStatementAssignment& assignment);
+
+    void visitExpressionPrimary(const NodeExpressionPrimary& primary);
+    void visitExpressionBinary(const NodeExpressionBinary& binary);
+
+    void writeAsm(const std::string& code);
+};
