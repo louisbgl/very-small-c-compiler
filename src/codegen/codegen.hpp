@@ -3,6 +3,9 @@
 #include <sstream>
 #include <memory>
 #include "../parser/parser.hpp"
+#include "scopeNode.hpp"
+#include "visitorAnalyzer.hpp"
+#include "visitorGenerator.hpp"
 
 namespace codegen {
 
@@ -10,24 +13,17 @@ class CodeGenerator {
 public:
     explicit CodeGenerator(const std::unique_ptr<NodeProgram>& program);
 
-    std::string emitAssembly() const;
-    
+    std::string generate();
+
 private:
     const std::unique_ptr<NodeProgram>& ast;
-    std::ostringstream asmOutput;
+    std::string asmOutput;
+    bool generated;
 
-    void generateCode();
+    std::unique_ptr<ScopeNode> globalScope;
 
-    /* Helper functions */
-
-    void writeAsm(std::string code);
-    void visitFunction(const NodeFunction& function);
-    void visitCompoundStatement(const NodeCompoundStatement& compound);
-    void visitStatement(const NodeStatement& statement);
-    void visitExpression(const NodeExpression& expression);
-    void visitExpressionPrimary(const NodeExpressionPrimary& primary);
-    void visitExpressionBinary(const NodeExpressionBinary& binary);
-
+    void analyze();       // Phase 1
+    void generateCode();  // Phase 2
 };
 
 } // namespace codegen
