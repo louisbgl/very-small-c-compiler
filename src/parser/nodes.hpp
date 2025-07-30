@@ -45,11 +45,17 @@ struct NodeStatementAssignment {
     NodeExpression expression;
 };
 
+struct NodeStatementIf {
+    NodeExpression condition;
+    std::unique_ptr<NodeCompoundStatement> body;
+};
+
 struct NodeStatement {
     std::variant<NodeStatementEmpty,
                  NodeStatementReturn,
                  NodeStatementVarDecl,
-                 NodeStatementAssignment> value;
+                 NodeStatementAssignment,
+                 NodeStatementIf> value;
 };
 
 struct NodeCompoundStatement {
