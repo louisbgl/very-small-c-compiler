@@ -60,6 +60,9 @@ NodeStatement Parser::parseStatement() {
     else if (currentToken.type == TokenType::Keyword_int) {
         return parseVariableDeclaration();
     }
+    else if (currentToken.type == TokenType::Keyword_if) {
+        return parseIfStatement();
+    }
     else if (currentToken.type == TokenType::Identifier) {
         return parseAssignmentStatement();
     }
@@ -106,6 +109,18 @@ NodeStatement Parser::parseAssignmentStatement() {
     expectAndConsumeToken(TokenType::Semicolon);
     
     return NodeBuilder::createAssignment(identifier, std::move(expression));
+}
+
+NodeStatement Parser::parseIfStatement() {
+    expectAndConsumeToken(TokenType::Keyword_if);
+    expectAndConsumeToken(TokenType::OpenParen);
+
+    auto condition = parseExpression();
+    expectAndConsumeToken(TokenType::CloseParen);
+
+    auto body = parseCompoundStatement();
+    
+    return NodeBuilder::createIfStatement(std::move(condition), std::make_unique<NodeCompoundStatement>(std::move(body)));
 }
 
 NodeExpression Parser::parseExpression() {

@@ -32,6 +32,7 @@ private:
     NodeStatement parseReturnStatement();
     NodeStatement parseVariableDeclaration();
     NodeStatement parseAssignmentStatement();
+    NodeStatement parseIfStatement();
     NodeExpression parseExpression();
     NodeExpression parseAddSubExpression();
     NodeExpression parseMultDivExpression();
