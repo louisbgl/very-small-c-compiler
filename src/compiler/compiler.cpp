@@ -32,7 +32,7 @@ void Compiler::printAST() const {
 
 void Compiler::printAssembly() const {
     if (codegen) {
-        std::cout << codegen->emitAssembly();
+        std::cout << codegen->generate();
     }
 }
 
@@ -48,7 +48,7 @@ void Compiler::saveAssemblyToFile(const std::string& filename) const {
         return;
     }
     
-    file << codegen->emitAssembly();
+    file << codegen->generate();
     file.close();
     
     std::cout << "Assembly saved to: " << filename << std::endl;
