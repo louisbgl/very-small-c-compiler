@@ -26,9 +26,9 @@ public:
     // Statement builders
     static NodeStatement createEmptyStatement();
     static NodeStatement createReturnStatement(std::optional<NodeExpression> expression = std::nullopt);
-    static NodeStatement createVariableDeclaration(const std::string& identifier, 
-                                                   std::optional<NodeExpression> initializer = std::nullopt);
+    static NodeStatement createVariableDeclaration(const std::string& identifier, std::optional<NodeExpression> initializer = std::nullopt);
     static NodeStatement createAssignment(const std::string& identifier, NodeExpression expression);
+    static NodeStatement createIfStatement(NodeExpression condition, std::unique_ptr<NodeCompoundStatement> body);
     
     // Compound statement builders
     static NodeCompoundStatement createCompoundStatement();

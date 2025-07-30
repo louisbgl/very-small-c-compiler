@@ -98,7 +98,15 @@ NodeStatement NodeBuilder::createAssignment(const std::string& identifier, NodeE
     return statement;
 }
 
-
+NodeStatement NodeBuilder::createIfStatement(NodeExpression condition, std::unique_ptr<NodeCompoundStatement> body) {
+    NodeStatementIf ifStmt;
+    ifStmt.condition = std::move(condition);
+    ifStmt.body = std::move(body);
+    
+    NodeStatement statement;
+    statement.value = std::move(ifStmt);
+    return statement;
+}
 
 // Compound statement builders
 NodeCompoundStatement NodeBuilder::createCompoundStatement() {
