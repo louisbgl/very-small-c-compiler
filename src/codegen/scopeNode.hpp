@@ -32,6 +32,7 @@ public:
     std::optional<Type> getTypeRecursive(const std::string& name) const;
 
     int getFrameSize() const;
+    bool hasChildren() const;
     ScopeNode& getChild(int index);
 
     void dump(int depth = 0) const;

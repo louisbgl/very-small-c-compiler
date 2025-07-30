@@ -3,7 +3,11 @@
 #include "scopeNode.hpp"
 
 ScopeNode::ScopeNode(ScopeNode* parent)
-    : parent(parent), currentOffset(0) {}
+    : parent(parent), currentOffset(0) {
+        if (parent) {
+            currentOffset = parent->getFrameSize();
+        }
+    }
 
 ScopeNode* ScopeNode::pushChild() {
     children.push_back(std::make_unique<ScopeNode>(this));
@@ -62,6 +66,10 @@ std::optional<Type> ScopeNode::getTypeRecursive(const std::string& name) const {
 
 int ScopeNode::getFrameSize() const {
     return currentOffset;
+}
+
+bool ScopeNode::hasChildren() const {
+    return !children.empty();
 }
 
 ScopeNode& ScopeNode::getChild(int index) {
