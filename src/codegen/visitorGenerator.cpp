@@ -1,7 +1,9 @@
 #include "visitorGenerator.hpp"
+#include <assert.h>
+#include <iostream>
 
 VisitorGenerator::VisitorGenerator(ScopeNode* rootScope)
-    : asmOutput(""), currentScope(rootScope), childScopeIndex(0) {}
+    : asmOutput(""), currentScope(rootScope), childScopeIndexes(), labelCounter(0) {}
 
 std::string VisitorGenerator::generate(const NodeProgram& ast) {
     writeAsm(".intel_syntax noprefix");
@@ -15,6 +17,7 @@ std::string VisitorGenerator::generate(const NodeProgram& ast) {
     writeAsm("    syscall");
     writeAsm("");
     
+    childScopeIndexes.push_back(0);
     visitFunction(*ast.main);
     return asmOutput;
 }
@@ -29,12 +32,19 @@ void VisitorGenerator::visitFunction(const NodeFunction& function) {
 }
 
 void VisitorGenerator::visitCompoundStatement(const NodeCompoundStatement& compound) {
+    childScopeIndexes.push_back(0);
     ScopeNode* originalScope = currentScope;
     
-    try {
-        currentScope = &currentScope->getChild(0);
-    } catch (const std::out_of_range&) {
-        throw std::runtime_error("Generator scope traversal mismatch - no child scope found for compound statement");
+    if (currentScope->hasChildren()) {
+        try {
+            currentScope = &currentScope->getChild(childScopeIndexes.back()++);
+        } catch (const std::out_of_range&) {
+            std::cerr << "[VisitorGenerator::visitCompoundStatement] childScopeIndexes vector: " << std::endl;
+            for (const auto& childScopeIndex : childScopeIndexes) {
+                std::cerr << "  - " << childScopeIndex << std::endl;
+            }
+            throw std::runtime_error("[VisitorGenerator::visitCompoundStatement] Generator scope traversal mismatch - no child scope found for compound statement");
+        }
     }
 
     int frameSize = currentScope->getFrameSize();
@@ -47,6 +57,7 @@ void VisitorGenerator::visitCompoundStatement(const NodeCompoundStatement& compo
     }
 
     currentScope = originalScope;
+    childScopeIndexes.pop_back();
 }
 
 void VisitorGenerator::visitStatement(const NodeStatement& statement) {
@@ -60,8 +71,10 @@ void VisitorGenerator::visitStatement(const NodeStatement& statement) {
             visitStatementVarDecl(stmt);
         } else if constexpr (std::is_same_v<T, NodeStatementAssignment>) {
             visitStatementAssignment(stmt);
+        } else if constexpr (std::is_same_v<T, NodeStatementIf>) {
+            visitStatementIf(stmt);
         } else {
-            throw std::runtime_error("[VisitorAnaliser::visitStatement] Unknown statement type");
+            throw std::runtime_error("[VisitorGenerator::visitStatement] Unknown statement type");
         }
     }, statement.value);
 }
@@ -82,7 +95,7 @@ void VisitorGenerator::visitExpression(const NodeExpression& expression) {
 void VisitorGenerator::visitStatementVarDecl(const NodeStatementVarDecl& varDecl) {
     auto offsetOpt = currentScope->getOffset(varDecl.identifier);
     if (!offsetOpt.has_value()) {
-        throw std::runtime_error("Variable '" + varDecl.identifier + "' not found in scope");
+        throw std::runtime_error("[VisitorGenerator::visitStatementVarDecl] Variable '" + varDecl.identifier + "' not found in scope");
     }
     int offset = offsetOpt.value();
 
@@ -107,15 +120,28 @@ void VisitorGenerator::visitStatementReturn(const NodeStatementReturn& returnStm
 }
 
 void VisitorGenerator::visitStatementAssignment(const NodeStatementAssignment& assignment) {
-    auto offsetOpt = currentScope->getOffset(assignment.identifier);
+    auto offsetOpt = currentScope->getOffsetRecursive(assignment.identifier);
     if (!offsetOpt.has_value()) {
-        throw std::runtime_error("Variable '" + assignment.identifier + "' not found in scope");
+        throw std::runtime_error("[VisitorGenerator::visitStatementAssignment] Variable '" + assignment.identifier + "' not found in scope");
     }
     int offset = offsetOpt.value();
 
     visitExpression(assignment.expression);
 
     writeAsm("mov [rbp - " + std::to_string(offset) + "], rax");
+}
+
+void VisitorGenerator::visitStatementIf(const NodeStatementIf& ifStmt) {
+    const std::string label = "if_label_" + std::to_string(labelCounter++);
+
+    visitExpression(ifStmt.condition);
+
+    writeAsm("test rax, rax");
+    writeAsm("jz " + label);
+
+    visitCompoundStatement(*ifStmt.body);
+
+    writeAsm(label + ":");
 }
 
 void VisitorGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
@@ -127,7 +153,7 @@ void VisitorGenerator::visitExpressionPrimary(const NodeExpressionPrimary& prima
         } else if constexpr (std::is_same_v<T, std::string>) {
             auto offsetOpt = currentScope->getOffsetRecursive(value);
             if (!offsetOpt.has_value()) {
-                throw std::runtime_error("Unknown identifier: " + value);
+                throw std::runtime_error("[VisitorGenerator::visitExpressionPrimary] Unknown identifier: " + value);
             }
             int offset = offsetOpt.value();
             writeAsm("mov rax, [rbp - " + std::to_string(offset) + "]");

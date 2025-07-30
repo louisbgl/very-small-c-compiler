@@ -12,7 +12,8 @@ public:
 private:
     std::string asmOutput;
     ScopeNode* currentScope;
-    int childScopeIndex;
+    std::vector<int> childScopeIndexes; // Acts like a stack of indexes for child scopes
+    int labelCounter;
     
     void visitFunction(const NodeFunction& function);
     void visitCompoundStatement(const NodeCompoundStatement& compound);
@@ -22,6 +23,7 @@ private:
     void visitStatementVarDecl(const NodeStatementVarDecl& varDecl);
     void visitStatementReturn(const NodeStatementReturn& returnStmt);
     void visitStatementAssignment(const NodeStatementAssignment& assignment);
+    void visitStatementIf(const NodeStatementIf& ifStmt);
 
     void visitExpressionPrimary(const NodeExpressionPrimary& primary);
     void visitExpressionBinary(const NodeExpressionBinary& binary);
