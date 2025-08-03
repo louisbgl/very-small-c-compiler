@@ -130,7 +130,25 @@ NodeStatement Parser::parseIfStatement() {
 }
 
 NodeExpression Parser::parseExpression() {
-    return parseAddSubExpression();
+    return parseComparisonExpression();
+}
+
+NodeExpression Parser::parseComparisonExpression() {
+    auto left = parseAddSubExpression();
+
+    if (isComparisonOperator(currentToken)) {
+        auto op = getComparisonOperator(currentToken);
+        consumeToken(); // Consume the operator
+        
+        auto right = parseAddSubExpression();
+        
+        // Create comparison expression with current left and right
+        auto leftPtr = std::make_unique<NodeExpression>(std::move(left));
+        auto rightPtr = std::make_unique<NodeExpression>(std::move(right));
+        return NodeBuilder::createComparisonExpression(op, std::move(leftPtr), std::move(rightPtr));
+    }
+    
+    return left;
 }
 
 NodeExpression Parser::parseAddSubExpression() {
@@ -211,12 +229,31 @@ const Token& Parser::peekToken(int offset) const {
     return lexer.peekToken(offset);
 }
 
+bool Parser::isComparisonOperator(const Token& token) const {
+    return token.type == TokenType::EqualEqual || token.type == TokenType::NotEqual ||
+           token.type == TokenType::LessThan || token.type == TokenType::LessThanEqual ||
+           token.type == TokenType::GreaterThan || token.type == TokenType::GreaterThanEqual;
+}
+
 bool Parser::isAddSubBinaryOperator(const Token& token) const {
     return token.type == TokenType::Plus || token.type == TokenType::Minus;
 }
 
 bool Parser::isMultDivBinaryOperator(const Token& token) const {
     return token.type == TokenType::Star || token.type == TokenType::Slash;
+}
+
+NodeExpressionComparison::ComparisonOperator Parser::getComparisonOperator(const Token& token) const {
+    switch (token.type) {
+        case TokenType::EqualEqual: return NodeExpressionComparison::ComparisonOperator::Equal;
+        case TokenType::NotEqual: return NodeExpressionComparison::ComparisonOperator::NotEqual;
+        case TokenType::LessThan: return NodeExpressionComparison::ComparisonOperator::LessThan;
+        case TokenType::LessThanEqual: return NodeExpressionComparison::ComparisonOperator::LessThanEqual;
+        case TokenType::GreaterThan: return NodeExpressionComparison::ComparisonOperator::GreaterThan;
+        case TokenType::GreaterThanEqual: return NodeExpressionComparison::ComparisonOperator::GreaterThanEqual;
+        default:
+            throw std::runtime_error("[Parser::getComparisonOperator] Not a comparison operator");
+    }
 }
 
 NodeExpressionBinary::BinaryOperator Parser::getBinaryOperator(const Token& token) const {
