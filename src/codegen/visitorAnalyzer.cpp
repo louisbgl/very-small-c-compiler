@@ -92,6 +92,10 @@ void VisitorAnalyzer::visitStatementIf(const NodeStatementIf& ifStmt) {
     } else {
         throw std::runtime_error("[VisitorAnalyzer::visitStatementIf] If statement body is null");
     }
+
+    if (ifStmt.elseBody.has_value()) {
+        visitCompoundStatement(*ifStmt.elseBody.value());
+    }
 }
 
 void VisitorAnalyzer::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
