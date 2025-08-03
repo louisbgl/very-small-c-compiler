@@ -48,6 +48,7 @@ struct NodeStatementAssignment {
 struct NodeStatementIf {
     NodeExpression condition;
     std::unique_ptr<NodeCompoundStatement> body;
+    std::optional<std::unique_ptr<NodeCompoundStatement>> elseBody;
 };
 
 struct NodeStatement {
