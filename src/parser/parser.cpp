@@ -119,6 +119,12 @@ NodeStatement Parser::parseIfStatement() {
     expectAndConsumeToken(TokenType::CloseParen);
 
     auto body = parseCompoundStatement();
+
+    if (currentToken.type == TokenType::Keyword_else) {
+        consumeToken(); // Consume 'else'
+        auto elseBody = parseCompoundStatement();
+        return NodeBuilder::createIfStatement(std::move(condition), std::make_unique<NodeCompoundStatement>(std::move(body)), std::make_unique<NodeCompoundStatement>(std::move(elseBody)));
+    }
     
     return NodeBuilder::createIfStatement(std::move(condition), std::make_unique<NodeCompoundStatement>(std::move(body)));
 }
