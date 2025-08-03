@@ -14,6 +14,8 @@ public:
     void analyze(const NodeProgram& ast);
     
 private:
+    inline void assertMainExists(const NodeProgram& ast) const;
+
     void visitFunction(const NodeFunction& function);
     void visitCompoundStatement(const NodeCompoundStatement& compound);
     void visitStatement(const NodeStatement& statement);

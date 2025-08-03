@@ -19,11 +19,32 @@ void VisitorAnalyzer::analyze(const NodeProgram& ast) {
         throw std::runtime_error("[VisitorAnalyzer::analyze] Root scope is not initialized");
     }
 
-    visitFunction(*ast.main);
+    assertMainExists(ast);
+
+    for (const auto& function : ast.functions) {
+        visitFunction(function);
+    }
+}
+
+void VisitorAnalyzer::assertMainExists(const NodeProgram& ast) const {
+    bool mainFound = false;
+    for (const auto& function : ast.functions) {
+        if (function.name == "main" && function.type == NodeFunction::FunctionType::Int) {
+            mainFound = true;
+            break;
+        }
+    }
+
+    if (!mainFound) {
+        throw std::runtime_error("[VisitorAnalyzer::assertMainExists] 'main' function not found in program");
+    }
 }
 
 void VisitorAnalyzer::visitFunction(const NodeFunction& function) {
+    currentScope = getRootScope();
+    currentScope = currentScope->pushChild();
     visitCompoundStatement(function.body);
+    currentScope = currentScope->getParent();
 }
 
 void VisitorAnalyzer::visitCompoundStatement(const NodeCompoundStatement& compound) {
@@ -66,6 +87,8 @@ void VisitorAnalyzer::visitExpression(const NodeExpression& expression) {
             visitExpressionBinary(expr);
         } else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
             visitExpressionComparison(expr);
+        } else if constexpr (std::is_same_v<T, NodeExpressionFunctionCall>) {
+            // OPTIONAL type checking for function calls
         } else {
             throw std::runtime_error("[VisitorAnalyzer::visitExpression] Unknown expression type");
         }
