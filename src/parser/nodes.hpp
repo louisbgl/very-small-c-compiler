@@ -36,8 +36,15 @@ struct NodeExpressionComparison {
     std::unique_ptr<NodeExpression> right;
 };
 
+struct NodeExpressionFunctionCall {
+    std::string functionName;
+};
+
 struct NodeExpression {
-    std::variant<NodeExpressionPrimary, NodeExpressionBinary, NodeExpressionComparison> value;
+    std::variant<NodeExpressionPrimary,
+                 NodeExpressionBinary,
+                 NodeExpressionComparison,
+                 NodeExpressionFunctionCall> value;
 };
 
 struct NodeStatementEmpty { };
@@ -88,5 +95,5 @@ struct NodeFunction {
 };
 
 struct NodeProgram {
-    std::unique_ptr<NodeFunction> main;
+    std::vector<NodeFunction> functions;
 };
