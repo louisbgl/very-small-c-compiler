@@ -14,6 +14,8 @@ static const KeywordEntry keywords[] = {
     {"int", TokenType::Keyword_int},
     {"return", TokenType::Keyword_return},
     {"if", TokenType::Keyword_if},
+    {"else", TokenType::Keyword_else},
+    {"else if", TokenType::Keyword_elseif},
 };
 
 // Returns a safe EOF token when needed
