@@ -23,6 +23,7 @@ public:
     static void printStatementVarDecl(const NodeStatementVarDecl& varDecl, int indent = 0);
     static void printStatementAssignment(const NodeStatementAssignment& assignment, int indent = 0);
     static void printStatementIf(const NodeStatementIf& ifStmt, int indent = 0);
+    static void printStatementWhile(const NodeStatementWhile& whileStmt, int indent = 0);
 
     // Instance interface (if needed for future extensibility)
     ProgramPrinter() = default;

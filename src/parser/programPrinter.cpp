@@ -48,6 +48,9 @@ void ProgramPrinter::printStatement(const NodeStatement& statement, int indent) 
         else if constexpr (std::is_same_v<T, NodeStatementIf>) {
             ProgramPrinter::printStatementIf(stmt, indent);
         }
+        else if constexpr (std::is_same_v<T, NodeStatementWhile>) {
+            ProgramPrinter::printStatementWhile(stmt, indent);
+        }
         else {
             ProgramPrinter::printIndented("??? Unknown statement", indent);
         }
@@ -172,6 +175,18 @@ void ProgramPrinter::printStatementIf(const NodeStatementIf& ifStmt, int indent)
         } else {
             printIndented("(null)", indent + 2);
         }
+    }
+}
+
+void ProgramPrinter::printStatementWhile(const NodeStatementWhile& whileStmt, int indent) {
+    printIndented("While Statement:", indent);
+    printIndented("condition:", indent + 1);
+    printExpression(whileStmt.condition, indent + 2);
+    printIndented("body:", indent + 1);
+    if (whileStmt.body) {
+        printCompoundStatement(*whileStmt.body, indent + 2);
+    } else {
+        printIndented("(null)", indent + 2);
     }
 }
 
