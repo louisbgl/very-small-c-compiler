@@ -89,6 +89,10 @@ run_test "examples/sample17.c" "[sample17] If else statement"
 run_test "examples/sample18.c" "[sample18] Nested if else statements"
 run_test "examples/sample19.c" "[sample19] Comparison in if statement"
 run_test "examples/sample20.c" "[sample20] Complex if statement with multiple conditions"
+run_test "examples/sample21.c" "[sample21] While loop with simple arithmetic"
+run_test "examples/sample22.c" "[sample22] Nested while loops"
+run_test "examples/sample23.c" "[sample23] While + if statement"
+run_test "examples/sample24.c" "[sample24] Stress test for all above features"
 
 echo
 echo "========================================"
