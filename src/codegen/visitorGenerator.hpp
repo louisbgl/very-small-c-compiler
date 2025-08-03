@@ -27,6 +27,7 @@ private:
 
     void visitExpressionPrimary(const NodeExpressionPrimary& primary);
     void visitExpressionBinary(const NodeExpressionBinary& binary);
+    void visitExpressionComparison(const NodeExpressionComparison& comparison);
 
     void writeAsm(const std::string& code);
 };

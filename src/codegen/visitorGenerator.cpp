@@ -86,6 +86,8 @@ void VisitorGenerator::visitExpression(const NodeExpression& expression) {
             visitExpressionPrimary(expr);
         } else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
             visitExpressionBinary(expr);
+        } else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
+            visitExpressionComparison(expr);
         } else {
             throw std::runtime_error("[VisitorGenerator::visitExpression] Unknown expression type");
         }
@@ -197,6 +199,48 @@ void VisitorGenerator::visitExpressionBinary(const NodeExpressionBinary& binary)
         default:
             throw std::runtime_error("[VisitorGenerator::visitExpressionBinary] Unknown binary operator");
     }
+}
+
+void VisitorGenerator::visitExpressionComparison(const NodeExpressionComparison& comparison) {
+    visitExpression(*comparison.left);
+    writeAsm("push rax");
+
+    visitExpression(*comparison.right);
+    writeAsm("mov rbx, rax");
+
+    writeAsm("pop rax");
+
+    switch (comparison.op) {
+        case NodeExpressionComparison::ComparisonOperator::Equal:
+            writeAsm("cmp rax, rbx");
+            writeAsm("sete al");
+            break;
+        case NodeExpressionComparison::ComparisonOperator::NotEqual:
+            writeAsm("cmp rax, rbx");
+            writeAsm("setne al");
+            break;
+        case NodeExpressionComparison::ComparisonOperator::LessThan:
+            writeAsm("cmp rax, rbx");
+            writeAsm("setl al");
+            break;
+        case NodeExpressionComparison::ComparisonOperator::LessThanEqual:
+            writeAsm("cmp rax, rbx");
+            writeAsm("setle al");
+            break;
+        case NodeExpressionComparison::ComparisonOperator::GreaterThan:
+            writeAsm("cmp rax, rbx");
+            writeAsm("setg al");
+            break;
+        case NodeExpressionComparison::ComparisonOperator::GreaterThanEqual:
+            writeAsm("cmp rax, rbx");
+            writeAsm("setge al");
+            break;
+        default:
+            throw std::runtime_error("[VisitorGenerator::visitExpressionComparison] Unknown comparison operator");
+    }
+
+    // Convert the result to a 64-bit integer
+    writeAsm("movzx rax, al");
 }
 
 void VisitorGenerator::writeAsm(const std::string& code) {
