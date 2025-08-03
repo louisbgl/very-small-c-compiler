@@ -17,7 +17,7 @@ int main() {
 
 int main() {
     int x = 10;
-    if (x - 5) {
+    if (x == 10) {
         return 1;
     } else {
         return 0;
@@ -31,13 +31,15 @@ Currently supports:
 - Variable declarations with `int` type  
 - Variable assignment and usage
 - Arithmetic operators: `+`, `-`, `*`, `/`
+- Comparison operators: `==`, `!=`, `<`, `<=`, `>`, `>=`
 - Parentheses `()` for expression grouping
-- Proper operator precedence (multiplication/division before addition/subtraction)
+- Proper operator precedence (arithmetic before comparisons)
 - `return` statements
 - Simple `if` statements with expression conditions
 - `if-else` statements
 - Nested `if` and `if-else` statements
 - Block scoping with `{}`
+- Complex expressions mixing arithmetic and comparisons
 
 ## Try it out
 
