@@ -18,7 +18,9 @@ Assignment               = Identifier "=" Expression ";"
 
 IfStmt                  = "if" "(" Expression ")" CompoundStmt ("else" CompoundStmt)?
 
-Expression               = AdditiveExpression
+Expression               = ComparisonExpression
+
+ComparisonExpression     = AdditiveExpression (("==" | "!=" | "<" | ">" | "<=" | ">=") AdditiveExpression)*
 
 AdditiveExpression       = MultiplicativeExpression (("+" | "-") MultiplicativeExpression)*
 

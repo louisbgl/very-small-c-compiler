@@ -87,6 +87,8 @@ run_test "examples/sample15.c" "[sample15] Simple if statement"
 run_test "examples/sample16.c" "[sample16] Nested if statements and arithmetic"
 run_test "examples/sample17.c" "[sample17] If else statement"
 run_test "examples/sample18.c" "[sample18] Nested if else statements"
+run_test "examples/sample19.c" "[sample19] Comparison in if statement"
+run_test "examples/sample20.c" "[sample20] Complex if statement with multiple conditions"
 
 echo
 echo "========================================"
