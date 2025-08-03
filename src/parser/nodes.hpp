@@ -25,8 +25,19 @@ struct NodeExpressionBinary {
     std::unique_ptr<NodeExpression> right;
 };
 
+struct NodeExpressionComparison {
+    enum class ComparisonOperator {
+        Equal, NotEqual,
+        LessThan, LessThanEqual,
+        GreaterThan, GreaterThanEqual
+    };
+    ComparisonOperator op;
+    std::unique_ptr<NodeExpression> left;
+    std::unique_ptr<NodeExpression> right;
+};
+
 struct NodeExpression {
-    std::variant<NodeExpressionPrimary, NodeExpressionBinary> value;
+    std::variant<NodeExpressionPrimary, NodeExpressionBinary, NodeExpressionComparison> value;
 };
 
 struct NodeStatementEmpty { };
