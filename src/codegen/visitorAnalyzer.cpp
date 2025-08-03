@@ -62,6 +62,8 @@ void VisitorAnalyzer::visitExpression(const NodeExpression& expression) {
             visitExpressionPrimary(expr);
         } else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
             visitExpressionBinary(expr);
+        } else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
+            visitExpressionComparison(expr);
         } else {
             throw std::runtime_error("[VisitorAnalyzer::visitExpression] Unknown expression type");
         }
@@ -111,4 +113,12 @@ void VisitorAnalyzer::visitExpressionPrimary(const NodeExpressionPrimary& primar
 void VisitorAnalyzer::visitExpressionBinary(const NodeExpressionBinary& binary) {
     visitExpression(*binary.left);
     visitExpression(*binary.right);
+}
+
+void VisitorAnalyzer::visitExpressionComparison(const NodeExpressionComparison& comparison) {
+    visitExpression(*comparison.left);
+    visitExpression(*comparison.right);
+
+    // Optional: Check types of left and right expressions if needed
+    // For now, we assume they are compatible for comparison
 }
