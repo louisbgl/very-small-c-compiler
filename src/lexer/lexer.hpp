@@ -34,7 +34,7 @@ private:
     char peekChar(int offset) const;
     bool isAtEnd() const;
     void skipWhitespace(size_t& line, size_t& column);
-    void skipComment(size_t& line, size_t& column);
+    bool skipComment(size_t& line, size_t& column);
     
     // Token matching methods
     bool tryGetSimpleToken(Token& token);

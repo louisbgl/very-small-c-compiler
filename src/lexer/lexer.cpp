@@ -16,6 +16,7 @@ static const KeywordEntry keywords[] = {
     {"if", TokenType::Keyword_if},
     {"else", TokenType::Keyword_else},
     {"else if", TokenType::Keyword_elseif},
+    {"while", TokenType::Keyword_while}
 };
 
 // Returns a safe EOF token when needed
@@ -70,8 +71,9 @@ void Lexer::tokenize() {
     
     while (!isAtEnd()) {
         skipWhitespace(line, column);
-        skipComment(line, column);
-
+        if (isAtEnd()) break;
+        
+        if (skipComment(line, column)) continue;
         if (isAtEnd()) break;
         
         // Update token position
@@ -124,8 +126,8 @@ void Lexer::skipWhitespace(size_t& line, size_t& column) {
     }
 }
 
-void Lexer::skipComment(size_t& line, size_t& column) {
-    if (!(currentChar() == '/' && peekChar(1) == '/')) return; // Not a comment
+bool Lexer::skipComment(size_t& line, size_t& column) {
+    if (!(currentChar() == '/' && peekChar(1) == '/')) return false; // Not a comment
     
     // Move past the '//'
     readPosition += 2;
@@ -142,6 +144,8 @@ void Lexer::skipComment(size_t& line, size_t& column) {
         line++;
         column = 1;
     }
+    
+    return true; // Found and skipped a comment
 }
 
 bool Lexer::tryGetSimpleToken(Token& token) {
