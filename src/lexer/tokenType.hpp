@@ -13,6 +13,7 @@ enum class TokenType {
     Keyword_if,
     Keyword_else,
     Keyword_elseif,
+    Keyword_while,
 
     // Identifiers and literals
     Identifier,
@@ -46,6 +47,7 @@ inline const std::string tokenTypeToString(TokenType type) {
         case TokenType::Keyword_if: return "Keyword_if";
         case TokenType::Keyword_else: return "Keyword_else";
         case TokenType::Keyword_elseif: return "Keyword_elseif";
+        case TokenType::Keyword_while: return "Keyword_while";
         case TokenType::Identifier: return "Identifier";
         case TokenType::String: return "String";
         case TokenType::Number: return "Number";
