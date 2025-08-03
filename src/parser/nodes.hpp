@@ -62,12 +62,18 @@ struct NodeStatementIf {
     std::optional<std::unique_ptr<NodeCompoundStatement>> elseBody;
 };
 
+struct NodeStatementWhile {
+    NodeExpression condition;
+    std::unique_ptr<NodeCompoundStatement> body;
+};
+
 struct NodeStatement {
     std::variant<NodeStatementEmpty,
                  NodeStatementReturn,
                  NodeStatementVarDecl,
                  NodeStatementAssignment,
-                 NodeStatementIf> value;
+                 NodeStatementIf,
+                 NodeStatementWhile> value;
 };
 
 struct NodeCompoundStatement {
