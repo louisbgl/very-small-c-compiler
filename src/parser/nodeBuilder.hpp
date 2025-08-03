@@ -35,6 +35,7 @@ public:
     static NodeStatement createVariableDeclaration(const std::string& identifier, std::optional<NodeExpression> initializer = std::nullopt);
     static NodeStatement createAssignment(const std::string& identifier, NodeExpression expression);
     static NodeStatement createIfStatement(NodeExpression condition, std::unique_ptr<NodeCompoundStatement> body, std::optional<std::unique_ptr<NodeCompoundStatement>> elseBody = std::nullopt);
+    static NodeStatement createWhileStatement(NodeExpression condition, std::unique_ptr<NodeCompoundStatement> body);
     
     // Compound statement builders
     static NodeCompoundStatement createCompoundStatement();

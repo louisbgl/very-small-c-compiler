@@ -131,6 +131,16 @@ NodeStatement NodeBuilder::createIfStatement(NodeExpression condition,
     return statement;
 }
 
+NodeStatement NodeBuilder::createWhileStatement(NodeExpression condition, std::unique_ptr<NodeCompoundStatement> body) {
+    NodeStatementWhile whileStmt;
+    whileStmt.condition = std::move(condition);
+    whileStmt.body = std::move(body);
+
+    NodeStatement statement;
+    statement.value = std::move(whileStmt);
+    return statement;
+}
+
 // Compound statement builders
 NodeCompoundStatement NodeBuilder::createCompoundStatement() {
     return NodeCompoundStatement{};
