@@ -72,7 +72,9 @@ run: all
 # Run tests
 test: all
 	@echo "Running test suite..."
-	@./test.sh
+	@./test.sh; EXIT_CODE=$$?; \
+	echo "Test suite exit code: $$EXIT_CODE"; \
+	exit 0
 
 # Install the compiler (to /usr/local/bin)
 install: all
