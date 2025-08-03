@@ -5,13 +5,15 @@ namespace parser {
 
 // Static methods implementation
 void ProgramPrinter::printProgram(const NodeProgram& program) {
-    if (!program.main) {
+    if (program.functions.empty()) {
         std::cout << "Program: (empty)" << std::endl;
         return;
     }
 
     std::cout << "Program:" << std::endl;
-    printFunction(*program.main, 1);
+    for (const auto& function : program.functions) {
+        printFunction(function, 1);
+    }
 }
 
 void ProgramPrinter::printFunction(const NodeFunction& function, int indent) {
@@ -68,6 +70,9 @@ void ProgramPrinter::printExpression(const NodeExpression& expression, int inden
         }
         else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
             ProgramPrinter::printExpressionComparison(expr, indent);
+        }
+        else if constexpr (std::is_same_v<T, NodeExpressionFunctionCall>) {
+            ProgramPrinter::printExpressionFunctionCall(expr, indent);
         }
         else {
             ProgramPrinter::printIndented("??? Unknown expression", indent);
@@ -128,6 +133,10 @@ void ProgramPrinter::printExpressionComparison(const NodeExpressionComparison& c
     printExpression(*comparison.left, indent + 2);
     printIndented("right:", indent + 1);
     printExpression(*comparison.right, indent + 2);
+}
+
+void ProgramPrinter::printExpressionFunctionCall(const NodeExpressionFunctionCall& call, int indent) {
+    printIndented("Function Call: " + call.functionName + "()", indent);
 }
 
 void ProgramPrinter::printStatementEmpty([[maybe_unused]] const NodeStatementEmpty& empty, int indent) {
