@@ -19,8 +19,11 @@ void Parser::printProgram() const {
 }
 
 std::unique_ptr<NodeProgram> Parser::parseProgram() {
-    auto mainFunction = parseFunction();
-    return NodeBuilder::createProgram(std::move(mainFunction));
+    std::vector<NodeFunction> functions;
+    while (currentToken.type != TokenType::EndOfFile) {
+        functions.push_back(parseFunction());
+    }
+    return NodeBuilder::createProgram(std::move(functions));
 }
 
 NodeFunction Parser::parseFunction() {
@@ -208,10 +211,17 @@ NodeExpression Parser::parsePrimaryExpression() {
         expectAndConsumeToken(TokenType::Number, "parsePrimaryExpression");
         return NodeBuilder::createPrimaryExpression(value);
     }
-    else if (currentToken.type == TokenType::Identifier) {
+    else if (currentToken.type == TokenType::Identifier && peekToken().type != TokenType::OpenParen) {
         std::string identifier = static_cast<std::string>(currentToken.lexeme);
         expectAndConsumeToken(TokenType::Identifier, "parsePrimaryExpression");
         return NodeBuilder::createPrimaryExpression(identifier);
+    }
+    else if (currentToken.type == TokenType::Identifier && peekToken().type == TokenType::OpenParen) {
+        std::string functionName = static_cast<std::string>(currentToken.lexeme);
+        expectAndConsumeToken(TokenType::Identifier, "parsePrimaryExpression");
+        expectAndConsumeToken(TokenType::OpenParen, "parsePrimaryExpression");
+        expectAndConsumeToken(TokenType::CloseParen, "parsePrimaryExpression");
+        return NodeBuilder::createFunctionCallExpression(functionName);
     }
     else if (currentToken.type == TokenType::OpenParen) {
         expectAndConsumeToken(TokenType::OpenParen, "parsePrimaryExpression");
