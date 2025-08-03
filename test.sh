@@ -85,6 +85,8 @@ run_test "examples/sample13.c" "[sample13] Variable assignements and complex usa
 run_test "examples/sample14.c" "[sample14] Variable assignment with arithmetic"
 run_test "examples/sample15.c" "[sample15] Simple if statement"
 run_test "examples/sample16.c" "[sample16] Nested if statements and arithmetic"
+run_test "examples/sample17.c" "[sample17] If else statement"
+run_test "examples/sample18.c" "[sample18] Nested if else statements"
 
 echo
 echo "========================================"
