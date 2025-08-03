@@ -18,34 +18,31 @@ std::string VisitorGenerator::generate(const NodeProgram& ast) {
     writeAsm("");
     
     childScopeIndexes.push_back(0);
-    visitFunction(*ast.main);
+    for (const auto& function : ast.functions) {
+        visitFunction(function);
+    }
+    childScopeIndexes.pop_back();
     return asmOutput;
 }
 
 void VisitorGenerator::visitFunction(const NodeFunction& function) {
+    currentScope = &currentScope->getChild(childScopeIndexes.back()++);
+
     writeAsm(".globl " + function.name);
     writeAsm(function.name + ":");
     writeAsm("push rbp");
     writeAsm("mov rbp, rsp");
     
+    childScopeIndexes.push_back(0);
     visitCompoundStatement(function.body);
+    childScopeIndexes.pop_back();
+    
+    currentScope = currentScope->getParent();
 }
 
 void VisitorGenerator::visitCompoundStatement(const NodeCompoundStatement& compound) {
+    currentScope = &currentScope->getChild(childScopeIndexes.back()++);
     childScopeIndexes.push_back(0);
-    ScopeNode* originalScope = currentScope;
-    
-    if (currentScope->hasChildren()) {
-        try {
-            currentScope = &currentScope->getChild(childScopeIndexes.back()++);
-        } catch (const std::out_of_range&) {
-            std::cerr << "[VisitorGenerator::visitCompoundStatement] childScopeIndexes vector: " << std::endl;
-            for (const auto& childScopeIndex : childScopeIndexes) {
-                std::cerr << "  - " << childScopeIndex << std::endl;
-            }
-            throw std::runtime_error("[VisitorGenerator::visitCompoundStatement] Generator scope traversal mismatch - no child scope found for compound statement");
-        }
-    }
 
     int frameSize = currentScope->getFrameSize();
     if (frameSize > 0) {
@@ -56,7 +53,7 @@ void VisitorGenerator::visitCompoundStatement(const NodeCompoundStatement& compo
         visitStatement(statement);
     }
 
-    currentScope = originalScope;
+    currentScope = currentScope->getParent();
     childScopeIndexes.pop_back();
 }
 
@@ -90,6 +87,8 @@ void VisitorGenerator::visitExpression(const NodeExpression& expression) {
             visitExpressionBinary(expr);
         } else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
             visitExpressionComparison(expr);
+        } else if constexpr (std::is_same_v<T, NodeExpressionFunctionCall>) {
+            visitExpressionFunctionCall(expr);
         } else {
             throw std::runtime_error("[VisitorGenerator::visitExpression] Unknown expression type");
         }
@@ -120,7 +119,7 @@ void VisitorGenerator::visitStatementReturn(const NodeStatementReturn& returnStm
         writeAsm("mov rax, 0");
     }
     writeAsm("leave");
-    writeAsm("ret");
+    writeAsm("ret\n");
 }
 
 void VisitorGenerator::visitStatementAssignment(const NodeStatementAssignment& assignment) {
@@ -259,6 +258,10 @@ void VisitorGenerator::visitExpressionComparison(const NodeExpressionComparison&
 
     // Convert the result to a 64-bit integer
     writeAsm("movzx rax, al");
+}
+
+void VisitorGenerator::visitExpressionFunctionCall(const NodeExpressionFunctionCall& funcCall) {
+    writeAsm("call " + funcCall.functionName);
 }
 
 void VisitorGenerator::writeAsm(const std::string& code) {
