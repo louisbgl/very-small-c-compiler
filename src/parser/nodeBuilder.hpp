@@ -16,13 +16,19 @@ public:
     static NodeExpression createBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                 std::unique_ptr<NodeExpression> left,
                                                 std::unique_ptr<NodeExpression> right);
+    static NodeExpression createComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
+                                                    std::unique_ptr<NodeExpression> left,
+                                                    std::unique_ptr<NodeExpression> right);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(int value);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(const std::string& identifier);
     static std::unique_ptr<NodeExpression> makePrimaryExpression(NodeExpression expression);
     static std::unique_ptr<NodeExpression> makeBinaryExpression(NodeExpressionBinary::BinaryOperator op,
                                                                std::unique_ptr<NodeExpression> left,
                                                                std::unique_ptr<NodeExpression> right);
-    
+    static std::unique_ptr<NodeExpression> makeComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
+                                                                   std::unique_ptr<NodeExpression> left,
+                                                                   std::unique_ptr<NodeExpression> right);
+
     // Statement builders
     static NodeStatement createEmptyStatement();
     static NodeStatement createReturnStatement(std::optional<NodeExpression> expression = std::nullopt);

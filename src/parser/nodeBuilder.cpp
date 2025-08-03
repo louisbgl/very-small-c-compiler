@@ -31,6 +31,16 @@ NodeExpression NodeBuilder::createBinaryExpression(NodeExpressionBinary::BinaryO
     return NodeExpression{std::move(binary)};
 }
 
+NodeExpression NodeBuilder::createComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
+                                                        std::unique_ptr<NodeExpression> left,
+                                                        std::unique_ptr<NodeExpression> right) {
+    NodeExpressionComparison comparison;
+    comparison.op = op;
+    comparison.left = std::move(left);
+    comparison.right = std::move(right);
+    return NodeExpression{std::move(comparison)};
+}
+
 std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(int value) {
     auto expr = std::make_unique<NodeExpression>();
     *expr = createPrimaryExpression(value);
@@ -54,6 +64,14 @@ std::unique_ptr<NodeExpression> NodeBuilder::makeBinaryExpression(NodeExpression
                                                                  std::unique_ptr<NodeExpression> right) {
     auto expr = std::make_unique<NodeExpression>();
     *expr = createBinaryExpression(op, std::move(left), std::move(right));
+    return expr;
+}
+
+std::unique_ptr<NodeExpression> NodeBuilder::makeComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
+                                                                       std::unique_ptr<NodeExpression> left,
+                                                                       std::unique_ptr<NodeExpression> right) {
+    auto expr = std::make_unique<NodeExpression>();
+    *expr = createComparisonExpression(op, std::move(left), std::move(right));
     return expr;
 }
 
