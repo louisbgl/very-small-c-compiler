@@ -17,6 +17,7 @@ public:
     // Helper functions for specific node types
     static void printExpressionPrimary(const NodeExpressionPrimary& primary, int indent = 0);
     static void printExpressionBinary(const NodeExpressionBinary& binary, int indent = 0);
+    static void printExpressionComparison(const NodeExpressionComparison& comparison, int indent = 0);
     static void printStatementEmpty(const NodeStatementEmpty& empty, int indent = 0);
     static void printStatementReturn(const NodeStatementReturn& returnStmt, int indent = 0);
     static void printStatementVarDecl(const NodeStatementVarDecl& varDecl, int indent = 0);

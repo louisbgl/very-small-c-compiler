@@ -63,6 +63,12 @@ void ProgramPrinter::printExpression(const NodeExpression& expression, int inden
         else if constexpr (std::is_same_v<T, NodeExpressionBinary>) {
             ProgramPrinter::printExpressionBinary(expr, indent);
         }
+        else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
+            ProgramPrinter::printExpressionComparison(expr, indent);
+        }
+        else {
+            ProgramPrinter::printIndented("??? Unknown expression", indent);
+        }
     }, expression.value);
 }
 
@@ -102,6 +108,23 @@ void ProgramPrinter::printExpressionBinary(const NodeExpressionBinary& binary, i
     } else {
         printIndented("(null)", indent + 2);
     }
+}
+
+void ProgramPrinter::printExpressionComparison(const NodeExpressionComparison& comparison, int indent) {
+    std::string opName;
+    switch (comparison.op) {
+        case NodeExpressionComparison::ComparisonOperator::Equal: opName = "Equal"; break;
+        case NodeExpressionComparison::ComparisonOperator::NotEqual: opName = "Not Equal"; break;
+        case NodeExpressionComparison::ComparisonOperator::LessThan: opName = "Less Than"; break;
+        case NodeExpressionComparison::ComparisonOperator::LessThanEqual: opName = "Less Than or Equal"; break;
+        case NodeExpressionComparison::ComparisonOperator::GreaterThan: opName = "Greater Than"; break;
+        case NodeExpressionComparison::ComparisonOperator::GreaterThanEqual: opName = "Greater Than or Equal"; break;
+    }
+    printIndented("Comparison Expression: " + opName, indent);
+    printIndented("left:", indent + 1);
+    printExpression(*comparison.left, indent + 2);
+    printIndented("right:", indent + 1);
+    printExpression(*comparison.right, indent + 2);
 }
 
 void ProgramPrinter::printStatementEmpty([[maybe_unused]] const NodeStatementEmpty& empty, int indent) {
