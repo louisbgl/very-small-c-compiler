@@ -24,6 +24,7 @@ private:
     void visitStatementReturn(const NodeStatementReturn& returnStmt);
     void visitStatementAssignment(const NodeStatementAssignment& assignment);
     void visitStatementIf(const NodeStatementIf& ifStmt);
+    void visitStatementWhile(const NodeStatementWhile& whileStmt);
 
     void visitExpressionPrimary(const NodeExpressionPrimary& primary);
     void visitExpressionBinary(const NodeExpressionBinary& binary);

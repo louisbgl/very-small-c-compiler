@@ -73,6 +73,8 @@ void VisitorGenerator::visitStatement(const NodeStatement& statement) {
             visitStatementAssignment(stmt);
         } else if constexpr (std::is_same_v<T, NodeStatementIf>) {
             visitStatementIf(stmt);
+        } else if constexpr (std::is_same_v<T, NodeStatementWhile>) {
+            visitStatementWhile(stmt);
         } else {
             throw std::runtime_error("[VisitorGenerator::visitStatement] Unknown statement type");
         }
@@ -149,6 +151,22 @@ void VisitorGenerator::visitStatementIf(const NodeStatementIf& ifStmt) {
     if (ifStmt.elseBody.has_value()) {
         visitCompoundStatement(*ifStmt.elseBody.value());
     }
+    writeAsm(endLabel + ":");
+}
+
+void VisitorGenerator::visitStatementWhile(const NodeStatementWhile& whileStmt) {
+    const std::string startLabel = "while_start_" + std::to_string(labelCounter++);
+    const std::string endLabel = "while_end_" + std::to_string(labelCounter++);
+
+    writeAsm(startLabel + ":");
+
+    visitExpression(whileStmt.condition);
+    writeAsm("test rax, rax");
+    writeAsm("jz " + endLabel);
+
+    visitCompoundStatement(*whileStmt.body);
+    
+    writeAsm("jmp " + startLabel);
     writeAsm(endLabel + ":");
 }
 
