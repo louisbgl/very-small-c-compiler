@@ -1,4 +1,4 @@
-Program                  = FunctionDecl
+Program                  = FunctionDecl+
 
 FunctionDecl             = Type Identifier "(" ")" CompoundStmt
 
