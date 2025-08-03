@@ -6,25 +6,38 @@ I'm building a tiny C compiler from scratch in C++! It takes simple C programs a
 
 ```c
 int main() {
-    return 5 + 3 * 2 - 1;  // Compiles to assembly and runs, exits with code 10
+    return 5 + 3 * 2 - 1;
 }
 
 int main() {
-    return (5 + 3) * 2;    // Parentheses for grouping, exits with code 16
+    int x = 5;
+    int y = 3;
+    return x + y;
 }
 
 int main() {
-    return 24 / (3 + 1);   // Division and grouping, exits with code 6
+    int x = 10;
+    if (x - 5) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 ```
 
 Currently supports:
-- `int main()` functions
-- Integer numbers
+- `int main()` function declarations
+- Integer literals and variables
+- Variable declarations with `int` type  
+- Variable assignment and usage
 - Arithmetic operators: `+`, `-`, `*`, `/`
 - Parentheses `()` for expression grouping
 - Proper operator precedence (multiplication/division before addition/subtraction)
 - `return` statements
+- Simple `if` statements with expression conditions
+- `if-else` statements
+- Nested `if` and `if-else` statements
+- Block scoping with `{}`
 
 ## Try it out
 
