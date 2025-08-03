@@ -5,20 +5,33 @@ I'm building a tiny C compiler from scratch in C++! It takes simple C programs a
 ## What it can do
 
 ```c
+// Basic arithmetic and variables
 int main() {
     return 5 + 3 * 2 - 1;
 }
+```
 
-int main() {
-    int x = 5;
-    int y = 3;
-    return x + y;
+```c
+// Multiple functions with calls
+int getAnswer() {
+    return 42;
 }
 
 int main() {
-    int x = 10;
-    if (x == 10) {
-        return 1;
+    int x = getAnswer();
+    return x + 8;
+}
+```
+
+```c
+// Functions in expressions and control flow
+int getValue() {
+    return 10;
+}
+
+int main() {
+    if (getValue() > 5) {
+        return getValue() * 2;
     } else {
         return 0;
     }
@@ -46,7 +59,11 @@ int main() {
 - Block scoping with `{ }`
 
 **Functions:**
-- `int main()` function only
+- Multiple function definitions: `int functionName() { ... }`
+- Function calls as expressions: `int x = getValue();`
+- Functions in arithmetic: `return func1() + func2() * 3;`
+- Functions in conditions: `if (checkValue() > 0) { ... }`
+- `int main()` as program entry point
 - `return` statements with expressions
 
 **Other:**
