@@ -141,6 +141,15 @@ void ProgramPrinter::printStatementIf(const NodeStatementIf& ifStmt, int indent)
     } else {
         printIndented("(null)", indent + 2);
     }
+
+    if (ifStmt.elseBody.has_value()) {
+        printIndented("else body:", indent + 1);
+        if (ifStmt.elseBody.value()) {
+            printCompoundStatement(*ifStmt.elseBody.value(), indent + 2);
+        } else {
+            printIndented("(null)", indent + 2);
+        }
+    }
 }
 
 // Instance methods implementation (delegate to static methods)
