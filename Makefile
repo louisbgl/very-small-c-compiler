@@ -65,7 +65,9 @@ FILE ?= examples/sample1.c
 # Run the compiler with a file (use: make run FILE=examples/sample2.c)
 run: all
 	@echo "Running $(TARGET) with $(FILE)"
-	@$(TARGET) $(FILE)
+	@$(TARGET) $(FILE); EXIT_CODE=$$?; \
+	echo "Exit code was: $$EXIT_CODE"; \
+	exit 0
 
 # Run tests
 test: all
