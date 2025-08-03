@@ -74,7 +74,7 @@ bool ScopeNode::hasChildren() const {
 
 ScopeNode& ScopeNode::getChild(int index) {
     if (index < 0 || index >= static_cast<int>(children.size())) {
-        throw std::out_of_range("Child index out of range");
+        throw std::out_of_range("[ScopeNode::getChild] Child index out of range (" + std::to_string(index) + ")");
     }
     return *children[index];
 }
