@@ -25,20 +25,32 @@ int main() {
 }
 ```
 
-Currently supports:
-- `int main()` function declarations
-- Integer literals and variables
-- Variable declarations with `int` type  
-- Variable assignment and usage
-- Arithmetic operators: `+`, `-`, `*`, `/`
-- Comparison operators: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- Parentheses `()` for expression grouping
-- Proper operator precedence (arithmetic before comparisons)
-- `return` statements
-- Simple `if` statements with expression conditions
-- `if-else` statements
-- Nested `if` and `if-else` statements
-- Block scoping with `{}`
+## C Language Subset Supported
+
+**Data Types & Variables:**
+- `int` variables only
+- Integer literals
+- Variable declarations: `int x = 5;` or `int x;`
+- Variable assignment: `x = 10;`
+
+**Operators:**
+- Arithmetic: `+`, `-`, `*`, `/` (with proper precedence)
+- Comparison: `==`, `!=`, `<`, `<=`, `>`, `>=`
+- Parentheses: `()` for grouping expressions
+
+**Control Flow:**
+- `if` statements: `if (condition) { ... }`
+- `if-else` statements: `if (condition) { ... } else { ... }`
+- `while` loops: `while (condition) { ... }`
+- Arbitrary nesting of all control structures
+- Block scoping with `{ }`
+
+**Functions:**
+- `int main()` function only
+- `return` statements with expressions
+
+**Other:**
+- Single-line comments: `// comment text`
 - Complex expressions mixing arithmetic and comparisons
 
 ## Try it out
