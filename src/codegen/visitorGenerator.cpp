@@ -132,16 +132,22 @@ void VisitorGenerator::visitStatementAssignment(const NodeStatementAssignment& a
 }
 
 void VisitorGenerator::visitStatementIf(const NodeStatementIf& ifStmt) {
-    const std::string label = "if_label_" + std::to_string(labelCounter++);
+    const std::string elseLabel = "else_label_" + std::to_string(labelCounter++);
+    const std::string endLabel = "end_label_" + std::to_string(labelCounter++);
 
     visitExpression(ifStmt.condition);
 
     writeAsm("test rax, rax");
-    writeAsm("jz " + label);
+    writeAsm("jz " + elseLabel);
 
     visitCompoundStatement(*ifStmt.body);
+    writeAsm("jmp " + endLabel);
 
-    writeAsm(label + ":");
+    writeAsm(elseLabel + ":");
+    if (ifStmt.elseBody.has_value()) {
+        visitCompoundStatement(*ifStmt.elseBody.value());
+    }
+    writeAsm(endLabel + ":");
 }
 
 void VisitorGenerator::visitExpressionPrimary(const NodeExpressionPrimary& primary) {
