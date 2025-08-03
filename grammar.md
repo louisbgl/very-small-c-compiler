@@ -16,7 +16,7 @@ VariableDeclaration      = Type Identifier ("=" Expression)? ";"
 
 Assignment               = Identifier "=" Expression ";"
 
-IfStmt                  = "if" "(" Expression ")" CompoundStmt
+IfStmt                  = "if" "(" Expression ")" CompoundStmt ("else" CompoundStmt)?
 
 Expression               = AdditiveExpression
 
