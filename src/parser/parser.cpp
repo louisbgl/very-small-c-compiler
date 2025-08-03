@@ -24,21 +24,21 @@ std::unique_ptr<NodeProgram> Parser::parseProgram() {
 }
 
 NodeFunction Parser::parseFunction() {
-    expectAndConsumeToken(TokenType::Keyword_int);
+    expectAndConsumeToken(TokenType::Keyword_int, "parseFunction");
 
-    expectToken(TokenType::Identifier);
+    expectToken(TokenType::Identifier, "parseFunction");
     std::string functionName = static_cast<std::string>(currentToken.lexeme);
     consumeToken(); // Consume identifier token
 
-    expectAndConsumeToken(TokenType::OpenParen);
-    expectAndConsumeToken(TokenType::CloseParen);
+    expectAndConsumeToken(TokenType::OpenParen, "parseFunction");
+    expectAndConsumeToken(TokenType::CloseParen, "parseFunction");
 
     auto body = parseCompoundStatement();
     return NodeBuilder::createFunction(NodeFunction::FunctionType::Int, functionName, std::move(body));
 }
 
 NodeCompoundStatement Parser::parseCompoundStatement() {
-    expectAndConsumeToken(TokenType::OpenBrace);
+    expectAndConsumeToken(TokenType::OpenBrace, "parseCompoundStatement");
 
     NodeCompoundStatement compoundStatement;
     while (currentToken.type != TokenType::EndOfFile &&
@@ -46,7 +46,7 @@ NodeCompoundStatement Parser::parseCompoundStatement() {
         compoundStatement.statements.push_back(parseStatement());
     }
 
-    expectAndConsumeToken(TokenType::CloseBrace);
+    expectAndConsumeToken(TokenType::CloseBrace, "parseCompoundStatement");
     return compoundStatement;
 }
 
@@ -66,24 +66,27 @@ NodeStatement Parser::parseStatement() {
     else if (currentToken.type == TokenType::Identifier) {
         return parseAssignmentStatement();
     }
+    else if (currentToken.type == TokenType::Keyword_while) {
+        return parseWhileStatement();
+    }
     else {
         throw std::runtime_error("[Parser::parseStatement] Unexpected token: " + currentToken.ToString());
     }
 }
 
 NodeStatement Parser::parseReturnStatement() {
-    expectAndConsumeToken(TokenType::Keyword_return);
+    expectAndConsumeToken(TokenType::Keyword_return, "parseReturnStatement");
 
     auto expression = parseExpression();
-    expectAndConsumeToken(TokenType::Semicolon);
-    
+    expectAndConsumeToken(TokenType::Semicolon, "parseReturnStatement");
+
     return NodeBuilder::createReturnStatement(std::move(expression));
 }
 
 NodeStatement Parser::parseVariableDeclaration() {
-    expectAndConsumeToken(TokenType::Keyword_int);
+    expectAndConsumeToken(TokenType::Keyword_int, "parseVariableDeclaration");
 
-    expectToken(TokenType::Identifier);
+    expectToken(TokenType::Identifier, "parseVariableDeclaration");
     std::string identifier = static_cast<std::string>(currentToken.lexeme);
     consumeToken(); // Consume identifier token
 
@@ -93,30 +96,30 @@ NodeStatement Parser::parseVariableDeclaration() {
         initializer = parseExpression();
     }
 
-    expectAndConsumeToken(TokenType::Semicolon);
+    expectAndConsumeToken(TokenType::Semicolon, "parseVariableDeclaration");
     
     return NodeBuilder::createVariableDeclaration(identifier, std::move(initializer));
 }
 
 NodeStatement Parser::parseAssignmentStatement() {
-    expectToken(TokenType::Identifier);
+    expectToken(TokenType::Identifier, "parseAssignmentStatement");
     std::string identifier = static_cast<std::string>(currentToken.lexeme);
     consumeToken(); // Consume identifier token
 
-    expectAndConsumeToken(TokenType::Equal);
+    expectAndConsumeToken(TokenType::Equal, "parseAssignmentStatement");
     auto expression = parseExpression();
-    
-    expectAndConsumeToken(TokenType::Semicolon);
-    
+
+    expectAndConsumeToken(TokenType::Semicolon, "parseAssignmentStatement");
+
     return NodeBuilder::createAssignment(identifier, std::move(expression));
 }
 
 NodeStatement Parser::parseIfStatement() {
-    expectAndConsumeToken(TokenType::Keyword_if);
-    expectAndConsumeToken(TokenType::OpenParen);
+    expectAndConsumeToken(TokenType::Keyword_if, "parseIfStatement");
+    expectAndConsumeToken(TokenType::OpenParen, "parseIfStatement");
 
     auto condition = parseExpression();
-    expectAndConsumeToken(TokenType::CloseParen);
+    expectAndConsumeToken(TokenType::CloseParen, "parseIfStatement");
 
     auto body = parseCompoundStatement();
 
@@ -127,6 +130,18 @@ NodeStatement Parser::parseIfStatement() {
     }
     
     return NodeBuilder::createIfStatement(std::move(condition), std::make_unique<NodeCompoundStatement>(std::move(body)));
+}
+
+NodeStatement Parser::parseWhileStatement() {
+    expectAndConsumeToken(TokenType::Keyword_while, "parseWhileStatement");
+    expectAndConsumeToken(TokenType::OpenParen, "parseWhileStatement");
+
+    auto condition = parseExpression();
+    expectAndConsumeToken(TokenType::CloseParen, "parseWhileStatement");
+
+    auto body = parseCompoundStatement();
+
+    return NodeBuilder::createWhileStatement(std::move(condition), std::make_unique<NodeCompoundStatement>(std::move(body)));
 }
 
 NodeExpression Parser::parseExpression() {
@@ -158,7 +173,7 @@ NodeExpression Parser::parseAddSubExpression() {
         auto op = getBinaryOperator(currentToken);
         consumeToken(); // Consume the operator
         
-        auto right = parsePrimaryExpression();
+        auto right = parseMultDivExpression();
         
         // Create binary expression with current left and right
         auto leftPtr = std::make_unique<NodeExpression>(std::move(left));
@@ -190,18 +205,18 @@ NodeExpression Parser::parseMultDivExpression() {
 NodeExpression Parser::parsePrimaryExpression() {
     if (currentToken.type == TokenType::Number) {
         int value = std::stoi(std::string(currentToken.lexeme));
-        expectAndConsumeToken(TokenType::Number);
+        expectAndConsumeToken(TokenType::Number, "parsePrimaryExpression");
         return NodeBuilder::createPrimaryExpression(value);
     }
     else if (currentToken.type == TokenType::Identifier) {
         std::string identifier = static_cast<std::string>(currentToken.lexeme);
-        expectAndConsumeToken(TokenType::Identifier);
+        expectAndConsumeToken(TokenType::Identifier, "parsePrimaryExpression");
         return NodeBuilder::createPrimaryExpression(identifier);
     }
     else if (currentToken.type == TokenType::OpenParen) {
-        expectAndConsumeToken(TokenType::OpenParen);
+        expectAndConsumeToken(TokenType::OpenParen, "parsePrimaryExpression");
         auto expression = parseExpression();
-        expectAndConsumeToken(TokenType::CloseParen);
+        expectAndConsumeToken(TokenType::CloseParen, "parsePrimaryExpression");
         return NodeBuilder::createPrimaryExpression(std::move(expression));
     }
     else {
@@ -209,15 +224,16 @@ NodeExpression Parser::parsePrimaryExpression() {
     }
 }
 
-void Parser::expectAndConsumeToken(TokenType expected) {
-    expectToken(expected);
+void Parser::expectAndConsumeToken(TokenType expected, std::string parentFunction) {
+    expectToken(expected, parentFunction);
     consumeToken();
 }
 
-void Parser::expectToken(TokenType expected) {
+void Parser::expectToken(TokenType expected, std::string parentFunction) {
     if (currentToken.type != expected) {
         throw std::runtime_error("[Parser::expectToken] Expected token type " + tokenTypeToString(expected) +
-                                 ", but got " + tokenTypeToString(currentToken.type));
+                                 ", but got " + tokenTypeToString(currentToken.type) +
+                                 " in function " + parentFunction);
     }
 }
 

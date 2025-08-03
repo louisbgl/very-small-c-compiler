@@ -33,6 +33,7 @@ private:
     NodeStatement parseVariableDeclaration();
     NodeStatement parseAssignmentStatement();
     NodeStatement parseIfStatement();
+    NodeStatement parseWhileStatement();
     NodeExpression parseExpression();
     NodeExpression parseComparisonExpression();
     NodeExpression parseAddSubExpression();
@@ -40,8 +41,8 @@ private:
     NodeExpression parsePrimaryExpression();
 
     /* Helper functions */
-    void expectAndConsumeToken(TokenType expected);
-    void expectToken(TokenType expected);
+    void expectAndConsumeToken(TokenType expected, std::string parentFunction = "");
+    void expectToken(TokenType expected, std::string parentFunction = "");
     void consumeToken();
 
     // Looks at the token after CurrentToken without consuming it (with optional offset to look ahead even more)
