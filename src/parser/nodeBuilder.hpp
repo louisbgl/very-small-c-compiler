@@ -19,15 +19,7 @@ public:
     static NodeExpression createComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
                                                     std::unique_ptr<NodeExpression> left,
                                                     std::unique_ptr<NodeExpression> right);
-    static std::unique_ptr<NodeExpression> makePrimaryExpression(int value);
-    static std::unique_ptr<NodeExpression> makePrimaryExpression(const std::string& identifier);
-    static std::unique_ptr<NodeExpression> makePrimaryExpression(NodeExpression expression);
-    static std::unique_ptr<NodeExpression> makeBinaryExpression(NodeExpressionBinary::BinaryOperator op,
-                                                               std::unique_ptr<NodeExpression> left,
-                                                               std::unique_ptr<NodeExpression> right);
-    static std::unique_ptr<NodeExpression> makeComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
-                                                                   std::unique_ptr<NodeExpression> left,
-                                                                   std::unique_ptr<NodeExpression> right);
+    static NodeExpression createFunctionCallExpression(const std::string& functionName);
 
     // Statement builders
     static NodeStatement createEmptyStatement();
@@ -47,8 +39,7 @@ public:
                                      NodeCompoundStatement body);
     
     // Program builders
-    static std::unique_ptr<NodeProgram> createProgram(std::unique_ptr<NodeFunction> mainFunction);
-    static std::unique_ptr<NodeProgram> createProgram(NodeFunction mainFunction);
+    static std::unique_ptr<NodeProgram> createProgram(std::vector<NodeFunction> functions);
 };
 
 } // namespace parser

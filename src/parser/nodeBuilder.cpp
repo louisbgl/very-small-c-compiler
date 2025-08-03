@@ -41,38 +41,10 @@ NodeExpression NodeBuilder::createComparisonExpression(NodeExpressionComparison:
     return NodeExpression{std::move(comparison)};
 }
 
-std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(int value) {
-    auto expr = std::make_unique<NodeExpression>();
-    *expr = createPrimaryExpression(value);
-    return expr;
-}
-
-std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(const std::string& identifier) {
-    auto expr = std::make_unique<NodeExpression>();
-    *expr = createPrimaryExpression(identifier);
-    return expr;
-}
-
-std::unique_ptr<NodeExpression> NodeBuilder::makePrimaryExpression(NodeExpression expression) {
-    auto expr = std::make_unique<NodeExpression>();
-    *expr = createPrimaryExpression(std::move(expression));
-    return expr;
-}
-
-std::unique_ptr<NodeExpression> NodeBuilder::makeBinaryExpression(NodeExpressionBinary::BinaryOperator op,
-                                                                 std::unique_ptr<NodeExpression> left,
-                                                                 std::unique_ptr<NodeExpression> right) {
-    auto expr = std::make_unique<NodeExpression>();
-    *expr = createBinaryExpression(op, std::move(left), std::move(right));
-    return expr;
-}
-
-std::unique_ptr<NodeExpression> NodeBuilder::makeComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
-                                                                       std::unique_ptr<NodeExpression> left,
-                                                                       std::unique_ptr<NodeExpression> right) {
-    auto expr = std::make_unique<NodeExpression>();
-    *expr = createComparisonExpression(op, std::move(left), std::move(right));
-    return expr;
+NodeExpression NodeBuilder::createFunctionCallExpression(const std::string& functionName) {
+    NodeExpressionFunctionCall call;
+    call.functionName = functionName;
+    return NodeExpression{std::move(call)};
 }
 
 // Statement builders
@@ -164,15 +136,9 @@ NodeFunction NodeBuilder::createFunction(NodeFunction::FunctionType type,
 }
 
 // Program builders
-std::unique_ptr<NodeProgram> NodeBuilder::createProgram(std::unique_ptr<NodeFunction> mainFunction) {
+std::unique_ptr<NodeProgram> NodeBuilder::createProgram(std::vector<NodeFunction> functions) {
     auto program = std::make_unique<NodeProgram>();
-    program->main = std::move(mainFunction);
-    return program;
-}
-
-std::unique_ptr<NodeProgram> NodeBuilder::createProgram(NodeFunction mainFunction) {
-    auto program = std::make_unique<NodeProgram>();
-    program->main = std::make_unique<NodeFunction>(std::move(mainFunction));
+    program->functions = std::move(functions);
     return program;
 }
 
