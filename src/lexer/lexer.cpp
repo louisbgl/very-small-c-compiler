@@ -78,7 +78,7 @@ void Lexer::tokenize() {
         token.line = line;
         token.column = column;
         
-        if (tryGetSingleCharToken(token) || 
+        if (tryGetSimpleToken(token) || 
             tryGetLiteralToken(token) || 
             tryGetKeywordToken(token) || 
             tryGetIdentifierToken(token)) {
@@ -144,6 +144,16 @@ void Lexer::skipComment(size_t& line, size_t& column) {
     }
 }
 
+bool Lexer::tryGetSimpleToken(Token& token) {
+    // Try multi-character operators first
+    if (tryGetMultiCharToken(token)) {
+        return true;
+    }
+
+    // Fall back to single-character tokens
+    return tryGetSingleCharToken(token);
+}
+
 bool Lexer::tryGetSingleCharToken(Token& token) {
     char c = currentChar();
     switch (c) {
@@ -152,12 +162,39 @@ bool Lexer::tryGetSingleCharToken(Token& token) {
         case ')': createToken(token, TokenType::CloseParen, ")"); return true;
         case '{': createToken(token, TokenType::OpenBrace,  "{"); return true;
         case '}': createToken(token, TokenType::CloseBrace, "}"); return true;
-        case '=': createToken(token, TokenType::Equal,      "="); return true; // WILL NEED TO BE CHANGED LATER
+        case '=': createToken(token, TokenType::Equal,      "="); return true;
         case '+': createToken(token, TokenType::Plus,       "+"); return true;
         case '-': createToken(token, TokenType::Minus,      "-"); return true;
         case '*': createToken(token, TokenType::Star,       "*"); return true;
         case '/': createToken(token, TokenType::Slash,      "/"); return true;
+        case '<': createToken(token, TokenType::LessThan,   "<"); return true;
+        case '>': createToken(token, TokenType::GreaterThan,">"); return true;
         default:  return false;
+    }
+}
+
+bool Lexer::tryGetMultiCharToken(Token& token) {
+    char c = currentChar();
+    char next = peekChar(1);
+    
+    if (c == '=' && next == '=') {
+        createToken(token, TokenType::EqualEqual, "==");
+        return true;
+    }
+    else if (c == '!' && next == '=') {
+        createToken(token, TokenType::NotEqual, "!=");
+        return true;
+    }
+    else if (c == '<' && next == '=') {
+        createToken(token, TokenType::LessThanEqual, "<=");
+        return true;
+    }
+    else if (c == '>' && next == '=') {
+        createToken(token, TokenType::GreaterThanEqual, ">=");
+        return true;
+    }
+    else {
+        return false;
     }
 }
 

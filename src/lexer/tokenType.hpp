@@ -30,6 +30,11 @@ enum class TokenType {
     Minus,
     Star,
     Slash,
+
+    // Comparators
+    EqualEqual, NotEqual,
+    LessThan, LessThanEqual,
+    GreaterThan, GreaterThanEqual
 };
 
 inline const std::string tokenTypeToString(TokenType type) {
@@ -54,6 +59,12 @@ inline const std::string tokenTypeToString(TokenType type) {
         case TokenType::Minus: return "Minus";
         case TokenType::Star: return "Star";
         case TokenType::Slash: return "Slash";
+        case TokenType::EqualEqual: return "EqualEqual";
+        case TokenType::NotEqual: return "NotEqual";
+        case TokenType::LessThan: return "LessThan";
+        case TokenType::LessThanEqual: return "LessThanEqual";
+        case TokenType::GreaterThan: return "GreaterThan";
+        case TokenType::GreaterThanEqual: return "GreaterThanEqual";
     }
     return "\033[31mUnknown\033[0m"; // Fallback, red for unknown tokens
 }

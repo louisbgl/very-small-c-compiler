@@ -37,7 +37,9 @@ private:
     void skipComment(size_t& line, size_t& column);
     
     // Token matching methods
+    bool tryGetSimpleToken(Token& token);
     bool tryGetSingleCharToken(Token& token);
+    bool tryGetMultiCharToken(Token& token);
     bool tryGetLiteralToken(Token& token);
     bool tryGetNumberLiteral(Token& token);
     bool tryGetStringLiteral(Token& token);
