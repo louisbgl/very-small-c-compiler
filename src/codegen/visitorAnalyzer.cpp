@@ -49,6 +49,8 @@ void VisitorAnalyzer::visitStatement(const NodeStatement& statement) {
             // OPTIONAL type checking for assignments
         } else if constexpr (std::is_same_v<T, NodeStatementIf>) {
             visitStatementIf(stmt);
+        } else if constexpr (std::is_same_v<T, NodeStatementWhile>) {
+            visitStatementWhile(stmt);
         } else {
             throw std::runtime_error("[VisitorAnalyzer::visitStatement] Unknown statement type");
         }
@@ -97,6 +99,15 @@ void VisitorAnalyzer::visitStatementIf(const NodeStatementIf& ifStmt) {
 
     if (ifStmt.elseBody.has_value()) {
         visitCompoundStatement(*ifStmt.elseBody.value());
+    }
+}
+
+void VisitorAnalyzer::visitStatementWhile(const NodeStatementWhile& whileStmt) {
+    visitExpression(whileStmt.condition);
+    if (whileStmt.body) {
+        visitCompoundStatement(*whileStmt.body);
+    } else {
+        throw std::runtime_error("[VisitorAnalyzer::visitStatementWhile] While statement body is null");
     }
 }
 
