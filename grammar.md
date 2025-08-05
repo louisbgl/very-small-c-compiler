@@ -1,10 +1,14 @@
 Program                  = FunctionDecl+
 
-FunctionDecl             = Type Identifier "(" ")" CompoundStmt
+FunctionDecl             = Type Identifier "(" ParamList? ")" CompoundStmt
 
 Type                     = "int"
 
 Identifier               = [a-zA-Z_][a-zA-Z0-9_]*
+
+ParamList                = Parameter ("," Parameter)*
+
+Parameter                = Type Identifier
 
 CompoundStmt             = "{" Statement* "}"
 

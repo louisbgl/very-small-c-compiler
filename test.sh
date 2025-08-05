@@ -95,6 +95,8 @@ run_test "examples/sample23.c" "[sample23] While + if statement"
 run_test "examples/sample24.c" "[sample24] Stress test for all above features"
 run_test "examples/sample25.c" "[sample25] Function definition and call"
 run_test "examples/sample26.c" "[sample26] Complex function calls without parameters"
+run_test "examples/sample27.c" "[sample27] Simple function call with parameters"
+run_test "examples/sample28.c" "[sample28] Recursive function calls - Fibonacci sequence"
 
 echo
 echo "========================================"
