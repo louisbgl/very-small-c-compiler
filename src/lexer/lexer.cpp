@@ -166,6 +166,7 @@ bool Lexer::tryGetSingleCharToken(Token& token) {
         case ')': createToken(token, TokenType::CloseParen, ")"); return true;
         case '{': createToken(token, TokenType::OpenBrace,  "{"); return true;
         case '}': createToken(token, TokenType::CloseBrace, "}"); return true;
+        case ',': createToken(token, TokenType::Comma,      ","); return true;
         case '=': createToken(token, TokenType::Equal,      "="); return true;
         case '+': createToken(token, TokenType::Plus,       "+"); return true;
         case '-': createToken(token, TokenType::Minus,      "-"); return true;

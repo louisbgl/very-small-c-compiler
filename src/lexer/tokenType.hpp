@@ -24,6 +24,7 @@ enum class TokenType {
     Semicolon,
     OpenParen, CloseParen,
     OpenBrace, CloseBrace,
+    Comma,
 
     // Operators
     Equal,
@@ -56,6 +57,7 @@ inline const std::string tokenTypeToString(TokenType type) {
         case TokenType::CloseParen: return "CloseParen";
         case TokenType::OpenBrace: return "OpenBrace";
         case TokenType::CloseBrace: return "CloseBrace";
+        case TokenType::Comma: return "Comma";
         case TokenType::Equal: return "Equal";
         case TokenType::Plus: return "Plus";
         case TokenType::Minus: return "Minus";
