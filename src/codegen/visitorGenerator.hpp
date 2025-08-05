@@ -32,4 +32,10 @@ private:
     void visitExpressionFunctionCall(const NodeExpressionFunctionCall& funcCall);
 
     void writeAsm(const std::string& code);
+    
+    // Helper functions for function parameter handling
+    
+    static const std::vector<std::string>& getArgRegisters();
+    void setupFunctionParameters(const NodeFunction& function);
+    void setupFunctionCallArguments(const std::vector<NodeExpression>& arguments);
 };

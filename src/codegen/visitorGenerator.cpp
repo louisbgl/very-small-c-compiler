@@ -32,7 +32,12 @@ void VisitorGenerator::visitFunction(const NodeFunction& function) {
     writeAsm(function.name + ":");
     writeAsm("push rbp");
     writeAsm("mov rbp, rsp");
-    
+
+    int functionFrameSize = currentScope->getFrameSize();
+    writeAsm("sub rsp, " + std::to_string(functionFrameSize));
+
+    setupFunctionParameters(function);
+
     childScopeIndexes.push_back(0);
     visitCompoundStatement(function.body);
     childScopeIndexes.pop_back();
@@ -43,11 +48,6 @@ void VisitorGenerator::visitFunction(const NodeFunction& function) {
 void VisitorGenerator::visitCompoundStatement(const NodeCompoundStatement& compound) {
     currentScope = &currentScope->getChild(childScopeIndexes.back()++);
     childScopeIndexes.push_back(0);
-
-    int frameSize = currentScope->getFrameSize();
-    if (frameSize > 0) {
-        writeAsm("sub rsp, " + std::to_string(frameSize));
-    }
 
     for (const auto& statement : compound.statements) {
         visitStatement(statement);
@@ -261,9 +261,38 @@ void VisitorGenerator::visitExpressionComparison(const NodeExpressionComparison&
 }
 
 void VisitorGenerator::visitExpressionFunctionCall(const NodeExpressionFunctionCall& funcCall) {
+    setupFunctionCallArguments(funcCall.arguments);
+    
     writeAsm("call " + funcCall.functionName);
 }
 
 void VisitorGenerator::writeAsm(const std::string& code) {
     asmOutput += code + "\n";
+}
+
+const std::vector<std::string>& VisitorGenerator::getArgRegisters() {
+    static const std::vector<std::string> argRegs = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+    return argRegs;
+}
+
+void VisitorGenerator::setupFunctionParameters(const NodeFunction& function) {
+    const auto& argRegs = getArgRegisters();
+    
+    // Move register parameters to their stack slots
+    for (size_t i = 0; i < function.parameters.size(); i++) {
+        auto offset = currentScope->getOffset(function.parameters[i].name);
+        if (offset.has_value()) {
+            writeAsm("mov [rbp - " + std::to_string(offset.value()) + "], " + argRegs[i]);
+        }
+    }
+}
+
+void VisitorGenerator::setupFunctionCallArguments(const std::vector<NodeExpression>& arguments) {
+    const auto& argRegs = getArgRegisters();
+    
+    // Put arguments in System V ABI registers
+    for (size_t i = 0; i < arguments.size(); i++) {
+        visitExpression(arguments[i]);  // Result in rax
+        writeAsm("mov " + argRegs[i] + ", rax");
+    }
 }
