@@ -1,11 +1,12 @@
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include "scopeNode.hpp"
 
 ScopeNode::ScopeNode(ScopeNode* parent)
     : parent(parent), currentOffset(0) {
         if (parent) {
-            currentOffset = parent->getFrameSize();
+            currentOffset = parent->currentOffset;
         }
     }
 
@@ -20,7 +21,7 @@ ScopeNode* ScopeNode::getParent() const {
 
 void ScopeNode::addVariable(const std::string& name, Type type, int size) {
     if (getOffset(name)) {
-        throw std::runtime_error("Variable " + name + " already exists in this scope");
+        throw std::runtime_error("[ScopeNode::addVariable] Variable " + name + " already exists in this scope");
     }
     currentOffset += size;  // Increment before storing
     variables.push_back({name, type, currentOffset, size});
@@ -65,7 +66,11 @@ std::optional<Type> ScopeNode::getTypeRecursive(const std::string& name) const {
 }
 
 int ScopeNode::getFrameSize() const {
-    return currentOffset;
+    int maxOffset = currentOffset;  // locals in this scope
+    for (const auto& child : children) {
+        maxOffset = std::max(maxOffset, child->getFrameSize());
+    }
+    return maxOffset;
 }
 
 bool ScopeNode::hasChildren() const {
