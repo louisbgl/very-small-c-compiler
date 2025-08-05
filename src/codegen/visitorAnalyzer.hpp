@@ -28,6 +28,7 @@ private:
     void visitExpressionPrimary(const NodeExpressionPrimary& primary);
     void visitExpressionBinary(const NodeExpressionBinary& binary);
     void visitExpressionComparison(const NodeExpressionComparison& comparison);
+    void visitExpressionFunctionCall(const NodeExpressionFunctionCall& funcCall);
 
     std::unique_ptr<ScopeNode> rootScope;
     ScopeNode* currentScope;

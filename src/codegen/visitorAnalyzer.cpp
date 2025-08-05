@@ -43,6 +43,9 @@ void VisitorAnalyzer::assertMainExists(const NodeProgram& ast) const {
 void VisitorAnalyzer::visitFunction(const NodeFunction& function) {
     currentScope = getRootScope();
     currentScope = currentScope->pushChild();
+    for (const auto& param : function.parameters) {
+        currentScope->addVariable(param.name, Type::Int, 8); // Assuming all parameters are int
+    }
     visitCompoundStatement(function.body);
     currentScope = currentScope->getParent();
 }
@@ -88,7 +91,7 @@ void VisitorAnalyzer::visitExpression(const NodeExpression& expression) {
         } else if constexpr (std::is_same_v<T, NodeExpressionComparison>) {
             visitExpressionComparison(expr);
         } else if constexpr (std::is_same_v<T, NodeExpressionFunctionCall>) {
-            // OPTIONAL type checking for function calls
+            visitExpressionFunctionCall(expr);
         } else {
             throw std::runtime_error("[VisitorAnalyzer::visitExpression] Unknown expression type");
         }
@@ -155,4 +158,15 @@ void VisitorAnalyzer::visitExpressionComparison(const NodeExpressionComparison& 
 
     // Optional: Check types of left and right expressions if needed
     // For now, we assume they are compatible for comparison
+}
+
+void VisitorAnalyzer::visitExpressionFunctionCall(const NodeExpressionFunctionCall& funcCall) {
+    // Basic validation for function calls
+    if (funcCall.arguments.size() > 6) {
+        throw std::runtime_error("[VisitorAnalyzer::visitExpression] Function call has too many arguments (max 6)");
+    }
+    // Visit arguments for validation
+    for (const auto& arg : funcCall.arguments) {
+        visitExpression(arg);
+    }
 }
