@@ -41,9 +41,11 @@ NodeExpression NodeBuilder::createComparisonExpression(NodeExpressionComparison:
     return NodeExpression{std::move(comparison)};
 }
 
-NodeExpression NodeBuilder::createFunctionCallExpression(const std::string& functionName) {
+NodeExpression NodeBuilder::createFunctionCallExpression(const std::string& functionName, 
+                                                        std::vector<NodeExpression> arguments) {
     NodeExpressionFunctionCall call;
     call.functionName = functionName;
+    call.arguments = std::move(arguments);
     return NodeExpression{std::move(call)};
 }
 
@@ -126,11 +128,13 @@ NodeCompoundStatement NodeBuilder::createCompoundStatement(std::vector<NodeState
 
 // Function builders
 NodeFunction NodeBuilder::createFunction(NodeFunction::FunctionType type, 
-                                       const std::string& name, 
-                                       NodeCompoundStatement body) {
+                                        const std::string& name,
+                                        const std::vector<FunctionParameter>& parameters,
+                                        NodeCompoundStatement body) {
     NodeFunction function;
     function.type = type;
     function.name = name;
+    function.parameters = parameters;
     function.body = std::move(body);
     return function;
 }

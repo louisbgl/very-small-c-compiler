@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include <variant>
+#include "functionParams.hpp"
 
 /* Forward declarations */
 
@@ -38,6 +39,7 @@ struct NodeExpressionComparison {
 
 struct NodeExpressionFunctionCall {
     std::string functionName;
+    std::vector<NodeExpression> arguments;
 };
 
 struct NodeExpression {
@@ -91,6 +93,7 @@ struct NodeFunction {
     enum class FunctionType { Int };
     FunctionType type;
     std::string name;
+    std::vector<FunctionParameter> parameters;
     NodeCompoundStatement body;
 };
 

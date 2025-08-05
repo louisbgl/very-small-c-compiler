@@ -34,10 +34,32 @@ NodeFunction Parser::parseFunction() {
     consumeToken(); // Consume identifier token
 
     expectAndConsumeToken(TokenType::OpenParen, "parseFunction");
+    auto parameters = parseParameterList();
     expectAndConsumeToken(TokenType::CloseParen, "parseFunction");
 
     auto body = parseCompoundStatement();
-    return NodeBuilder::createFunction(NodeFunction::FunctionType::Int, functionName, std::move(body));
+    return NodeBuilder::createFunction(NodeFunction::FunctionType::Int, functionName, parameters, std::move(body));
+}
+
+std::vector<FunctionParameter> Parser::parseParameterList() {
+    std::vector<FunctionParameter> parameters;
+
+    while (currentToken.type != TokenType::CloseParen) {
+        expectToken(TokenType::Keyword_int, "parseParameterList");
+        consumeToken(); // Consume 'int'
+
+        expectToken(TokenType::Identifier, "parseParameterList");
+        std::string paramName = static_cast<std::string>(currentToken.lexeme);
+        consumeToken(); // Consume identifier token
+
+        parameters.push_back({FunctionParameter::ParameterType::Int, paramName});
+
+        if (currentToken.type == TokenType::Comma) {
+            consumeToken(); // Consume ','
+        }
+    }
+
+    return parameters;
 }
 
 NodeCompoundStatement Parser::parseCompoundStatement() {
@@ -220,8 +242,9 @@ NodeExpression Parser::parsePrimaryExpression() {
         std::string functionName = static_cast<std::string>(currentToken.lexeme);
         expectAndConsumeToken(TokenType::Identifier, "parsePrimaryExpression");
         expectAndConsumeToken(TokenType::OpenParen, "parsePrimaryExpression");
+        auto arguments = parseFunctionCallArguments();
         expectAndConsumeToken(TokenType::CloseParen, "parsePrimaryExpression");
-        return NodeBuilder::createFunctionCallExpression(functionName);
+        return NodeBuilder::createFunctionCallExpression(functionName, std::move(arguments));
     }
     else if (currentToken.type == TokenType::OpenParen) {
         expectAndConsumeToken(TokenType::OpenParen, "parsePrimaryExpression");
@@ -291,6 +314,23 @@ NodeExpressionBinary::BinaryOperator Parser::getBinaryOperator(const Token& toke
         default:
             throw std::runtime_error("[Parser::getBinaryOperator] Not a binary operator");
     }
+}
+
+std::vector<NodeExpression> Parser::parseFunctionCallArguments() {
+    std::vector<NodeExpression> arguments;
+
+    while (currentToken.type != TokenType::CloseParen) {
+        // Parse full expressions as arguments, not just primary expressions
+        arguments.push_back(parseExpression());
+
+        if (currentToken.type == TokenType::Comma) {
+            consumeToken(); // Consume ','
+        } else if (currentToken.type != TokenType::CloseParen) {
+            throw std::runtime_error("[Parser::parseFunctionCallArguments] Expected ',' or ')'");
+        }
+    }
+
+    return arguments;
 }
 
 } // namespace parser

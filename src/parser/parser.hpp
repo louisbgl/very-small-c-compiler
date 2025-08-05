@@ -27,6 +27,7 @@ private:
     /* Parsing functions */
     std::unique_ptr<NodeProgram> parseProgram();
     NodeFunction parseFunction();
+    std::vector<FunctionParameter> parseParameterList();
     NodeCompoundStatement parseCompoundStatement();
     NodeStatement parseStatement();
     NodeStatement parseReturnStatement();
@@ -53,6 +54,8 @@ private:
     bool isMultDivBinaryOperator(const Token& token) const;
     NodeExpressionComparison::ComparisonOperator getComparisonOperator(const Token& token) const;
     NodeExpressionBinary::BinaryOperator getBinaryOperator(const Token& token) const;
+
+    std::vector<NodeExpression> parseFunctionCallArguments();
 };
 
 } // namespace parser

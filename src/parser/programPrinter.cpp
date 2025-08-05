@@ -18,7 +18,16 @@ void ProgramPrinter::printProgram(const NodeProgram& program) {
 
 void ProgramPrinter::printFunction(const NodeFunction& function, int indent) {
     printIndented("Function: " + function.name + " -> int", indent);
+    if (!function.parameters.empty()) {
+        printIndented("Parameters:", indent + 1);
+        for (const auto& param : function.parameters) {
+            printIndented("- " + param.name + " (int)", indent + 2);
+        }
+    } else {
+        printIndented("Parameters: (none)", indent + 1);
+    }
     printCompoundStatement(function.body, indent + 1);
+    std::cout << std::endl;
 }
 
 void ProgramPrinter::printCompoundStatement(const NodeCompoundStatement& compound, int indent) {
@@ -137,6 +146,14 @@ void ProgramPrinter::printExpressionComparison(const NodeExpressionComparison& c
 
 void ProgramPrinter::printExpressionFunctionCall(const NodeExpressionFunctionCall& call, int indent) {
     printIndented("Function Call: " + call.functionName + "()", indent);
+    printIndented("Arguments:", indent + 1);
+    if (call.arguments.empty()) {
+        printIndented("(none)", indent + 2);
+    } else {
+        for (const auto& arg : call.arguments) {
+            printExpression(arg, indent + 2);
+        }
+    }
 }
 
 void ProgramPrinter::printStatementEmpty([[maybe_unused]] const NodeStatementEmpty& empty, int indent) {

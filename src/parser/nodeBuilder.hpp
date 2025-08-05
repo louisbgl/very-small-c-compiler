@@ -19,7 +19,8 @@ public:
     static NodeExpression createComparisonExpression(NodeExpressionComparison::ComparisonOperator op,
                                                     std::unique_ptr<NodeExpression> left,
                                                     std::unique_ptr<NodeExpression> right);
-    static NodeExpression createFunctionCallExpression(const std::string& functionName);
+    static NodeExpression createFunctionCallExpression(const std::string& functionName, 
+                                                      std::vector<NodeExpression> arguments = {});
 
     // Statement builders
     static NodeStatement createEmptyStatement();
@@ -35,8 +36,9 @@ public:
     
     // Function builders
     static NodeFunction createFunction(NodeFunction::FunctionType type, 
-                                     const std::string& name, 
-                                     NodeCompoundStatement body);
+                                    const std::string& name,
+                                    const std::vector<FunctionParameter>& parameters,
+                                    NodeCompoundStatement body);
     
     // Program builders
     static std::unique_ptr<NodeProgram> createProgram(std::vector<NodeFunction> functions);
